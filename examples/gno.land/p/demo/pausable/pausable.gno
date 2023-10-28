@@ -4,7 +4,7 @@ type Pausable struct {
 	paused bool
 }
 
-// New returns a new Pausable struct with non-paused state
+// New returns a new Pausable struct with non-paused state as default
 func New() *Pausable {
 	return &Pausable{paused: false}
 }
