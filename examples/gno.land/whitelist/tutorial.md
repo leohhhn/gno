@@ -1,7 +1,5 @@
 # From Zero to Gno.Land Hero
 
-> _August 10th 2023_
-
 In this tutorial, we will enter the world of **Gno.Land**, and build our own smart contract using the **Gno** programming language. Gno is an interpreted version of Golang that shares 99% of the functionality with Go, allowing us to write blockchain-specific code in a secure, battle-tested language that many developers already have in their skill set.
 
 We will go over what Gno.Land is, and how you can use the full potential of Gno to build secure blockchain applications in a familiar blockchain language.
@@ -57,7 +55,7 @@ make build && make install
 
 This completes the environment setup.
 
-To follow this tutorial, having the most up-to-date docs open is recommended. This is the [Gno Developer Portal](https://docs.onbloc.xyz/).
+To follow this tutorial, having the most up-to-date docs open is recommended. Currently, you can view the official docs locally by running `yarn start` in the `misc/docusaurus` folder. 
 
 ## Generating a Gno.Land keypair with Gnokey
 
@@ -159,7 +157,7 @@ type Whitelist struct {
 
 ```
 
-We will use the [standard library](https://docs.onbloc.xyz/docs/standard-libraries) provided by Gno to handle blockchain-specific data types and functionality. In the code above, we are defining a struct that will hold all information we need about a specific whitelist. We use `std.Address` as the native address type provided in Gno.
+We will use the standard library provided by Gno to handle blockchain-specific data types and functionality. In the code above, we are defining a struct that will hold all information we need about a specific whitelist. We use `std.Address` as the native address type provided in Gno.
 
 Next, we can write functions that we will need to act upon this struct:
 
@@ -553,7 +551,7 @@ By default, the faucet sends `1000000ugnot` to the provided address, equal to `1
 To check the balance of your address, you can use the [query](https://docs.onbloc.xyz/docs/cli/gnokey#make-an-abci-query) functionality of `gnokey` to make an ABCI query to the node.
 
 ```
-$ gnokey query bank/balances/bank/balances/g10rdr9mhc7xzlyqt9fu3nhl95jy8hmfdyws8yds
+$ gnokey query bank/balances/g10rdr9mhc7xzlyqt9fu3nhl95jy8hmfdyws8yds
 
 height: 0
 data: "1000000ugnot"
@@ -673,3 +671,5 @@ gnoland start
 This concludes our tutorial. Once again, congratulations on writing your first realm in Gno. You've become a real Gno.Land hero!
 
 If you'd like to see the full repository used for this tutorial, it can be found [here](https://github.com/leohhhn/gnoland_zero_to_hero/).
+
+> Written _August 10th 2023_, last updated _December 6th 2023_
