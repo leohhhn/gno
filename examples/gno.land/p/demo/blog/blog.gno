@@ -174,12 +174,16 @@ func (b *Blog) prepareAndSetPost(post *Post) error {
 	trimmedTitleKey := strings.Replace(post.Title, " ", "", -1)
 	pubDateKey := post.CreatedAt.Format(time.RFC3339)
 
+	// If called from ModEditPost
+	_, postExists := b.Posts.Get(post.Slug)
+
 	// Cannot have two posts with same title key
-	if _, found := b.PostsAlphabetical.Get(trimmedTitleKey); found {
+	if _, found := b.PostsAlphabetical.Get(trimmedTitleKey); found && !postExists {
 		return ErrPostTitleExists
 	}
+
 	// Cannot have two posts with *exact* same timestamp
-	if _, found := b.PostsPublished.Get(pubDateKey); found {
+	if _, found := b.PostsPublished.Get(pubDateKey); found && !postExists {
 		return ErrPostPubDateExists
 	}
 
