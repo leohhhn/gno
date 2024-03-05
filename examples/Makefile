@@ -9,13 +9,13 @@ help:
 	@echo "Available make commands:"
 	@cat Makefile | grep '^[a-z][^:]*:' | cut -d: -f1 | sort | sed 's/^/  /'
 
-.PHONY: precompile
-precompile:
-	go run ../gnovm/cmd/gno precompile --verbose .
+.PHONY: transpile
+transpile:
+	go run ../gnovm/cmd/gno transpile --verbose .
 
 .PHONY: build
-build: precompile
-	go run ../gnovm/cmd/gno build --verbose .
+build:
+	go run ../gnovm/cmd/gno transpile --verbose --gobuild .
 
 .PHONY: test
 test:
@@ -37,6 +37,11 @@ clean:
 GOFMT_FLAGS ?= -w
 fmt:
 	go run -modfile ../misc/devdeps/go.mod mvdan.cc/gofumpt $(GOFMT_FLAGS) `find . -name "*.gno"`
+
+.PHONY: imports
+GOIMPORTS_FLAGS ?= -w
+imports:
+	$(rundep) golang.org/x/tools/cmd/goimports $(GOIMPORTS_FLAGS) .
 
 .PHONY: tidy
 tidy:

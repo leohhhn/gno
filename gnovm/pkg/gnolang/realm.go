@@ -151,6 +151,7 @@ func (rlm *Realm) DidUpdate(po, xo, co Object) {
 	// Updates to .newCreated/.newEscaped /.newDeleted made here. (first gen)
 	// More appends happen during FinalizeRealmTransactions(). (second+ gen)
 	rlm.MarkDirty(po)
+
 	if co != nil {
 		co.IncRefCount()
 		if co.GetRefCount() > 1 {
@@ -166,6 +167,7 @@ func (rlm *Realm) DidUpdate(po, xo, co Object) {
 			rlm.MarkNewReal(co)
 		}
 	}
+
 	if xo != nil {
 		xo.DecRefCount()
 		if xo.GetRefCount() == 0 {
@@ -1129,18 +1131,23 @@ func copyValueWithRefs(parent Object, val Value) Value {
 		if cv.Closure != nil {
 			closure = toRefValue(parent, cv.Closure)
 		}
-		if cv.nativeBody != nil {
+		// nativeBody funcs which don't come from NativeStore (and thus don't
+		// have NativePkg/Name) can't be persisted, and should not be able
+		// to get here anyway.
+		if cv.nativeBody != nil && cv.NativePkg == "" {
 			panic("should not happen")
 		}
 		ft := copyTypeWithRefs(cv.Type)
 		return &FuncValue{
-			Type:     ft,
-			IsMethod: cv.IsMethod,
-			Source:   source,
-			Name:     cv.Name,
-			Closure:  closure,
-			FileName: cv.FileName,
-			PkgPath:  cv.PkgPath,
+			Type:       ft,
+			IsMethod:   cv.IsMethod,
+			Source:     source,
+			Name:       cv.Name,
+			Closure:    closure,
+			FileName:   cv.FileName,
+			PkgPath:    cv.PkgPath,
+			NativePkg:  cv.NativePkg,
+			NativeName: cv.NativeName,
 		}
 	case *BoundMethodValue:
 		fnc := copyValueWithRefs(cv, cv.Func).(*FuncValue)
@@ -1349,6 +1356,8 @@ func fillTypesOfValue(store Store, val Value) Value {
 		for cur := cv.List.Head; cur != nil; cur = cur.Next {
 			fillTypesTV(store, &cur.Key)
 			fillTypesTV(store, &cur.Value)
+
+			cv.vmap[cur.Key.ComputeMapKey(store, false)] = cur
 		}
 		return cv
 	case TypeValue:
@@ -1504,13 +1513,14 @@ func isUnsaved(oo Object) bool {
 	return oo.GetIsNewReal() || oo.GetIsDirty()
 }
 
+// realmPathPrefix is the prefix used to identify pkgpaths which are meant to
+// be realms and as such to have their state persisted. This is used by [IsRealmPath].
+const realmPathPrefix = "gno.land/r/"
+
+// IsRealmPath determines whether the given pkgpath is for a realm, and as such
+// should persist the global state.
 func IsRealmPath(pkgPath string) bool {
-	// TODO: make it more distinct to distinguish from normal paths.
-	if strings.HasPrefix(pkgPath, GnoRealmPkgsPrefixBefore) {
-		return true
-	} else {
-		return false
-	}
+	return strings.HasPrefix(pkgPath, realmPathPrefix)
 }
 
 func prettyJSON(jstr []byte) []byte {
