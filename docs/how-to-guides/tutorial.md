@@ -206,7 +206,7 @@ type Whitelist struct {
 	name     string         // Name of whitelist
 	owner    std.Address    // Owner of whitelist
 	deadline int64          // Whitelist deadline in block height
-	maxUsers int64          // Max number of users in whitelist
+	maxUsers int            // Max number of users in whitelist
 	userList []std.Address  // Currently signed-up users
 }
 
@@ -222,7 +222,7 @@ Next, we can write functions that we will need to act upon this struct:
 
 ```
 // Create a new Whitelist instance from arguments
-func NewWhitelist(name string, deadline int64, maxUsers int64, owner std.Address) *Whitelist {
+func NewWhitelist(name string, deadline int64, maxUsers int, owner std.Address) *Whitelist {
 	return &Whitelist{
 		name:     name,
 		owner:    owner,
@@ -244,7 +244,7 @@ func (w *Whitelist) GetWhitelistDeadline() int64 {
 	return w.deadline
 }
 
-func (w *Whitelist) GetMaxUsers() int64 {
+func (w *Whitelist) GetMaxUsers() int {
 	return w.maxUsers
 }
 
@@ -417,11 +417,12 @@ func NewWhitelist(name string, deadline int64, maxUsers int64) (int, string) {
 	w := whitelist.NewWhitelist(name, deadline, maxUsers, txSender)
 
 	// Update AVL tree with new state
-	whitelistTree.Set(ufmt.Sprintf("%d", id), w)
-
-	return id, "successfully created whitelist!"
+	success := whitelistTree.Set(strconv.Itoa(id)), w)
+    if success {
+	    return id, "successfully created whitelist!"
+    }
+    return -1, "could not create new whitelist"
 }
-
 ```
 
 The function above creates an instance of a whitelist with arguments
@@ -446,12 +447,14 @@ in the AVL tree to its new state.
 
 ```
 func SignUpToWhitelist(whitelistID int) string {
-	// Get ID
-	id := ufmt.Sprintf("%d", whitelistID)
+	// Get ID and convert to string
+	id := strconv.Atoi(whitelistID)
+	
 	// Get txSender
 	txSender := std.GetOrigCaller()
 
 	// Try to get specific whitelist from AVL tree
+	// Note: AVL tree keys are of the string type
 	whiteListRaw, exists := whitelistTree.Get(id)
 
 	if !exists {
@@ -469,12 +472,12 @@ func SignUpToWhitelist(whitelistID int) string {
 	}
 
 	// If deadline has passed
-	if ddl.Unix() <= time.Now().Unix() {
+	if ddl <= std.GetHeight() {
 		return "whitelist already closed"
 	}
 
 	// If whitelist is full
-	if w.GetMaxUsers() <= int64(len(w.GetWhitelistedUsers())) {
+	if w.GetMaxUsers() <= len(w.GetWhitelistedUsers()) {
 		return "whitelist full"
 	}
 
@@ -482,9 +485,11 @@ func SignUpToWhitelist(whitelistID int) string {
 	w.AddUserToList(txSender)
 
 	// Update the AVL tree with new state
-	whitelistTree.Set(id, w)
-
-	return ufmt.Sprintf("successfully added user to whitelist %d", whitelistID)
+	success := whitelistTree.Set(id, w)
+	if success {
+	    return ufmt.Sprintf("successfully added user to whitelist %d", whitelistID)
+	}
+    return "failed to sign up"
 }
 
 ```
@@ -540,11 +545,11 @@ func renderHomepage() string {
 		)
 
 		// Check if whitelist deadline is past due
-		if ddl.Unix() > time.Now().Unix() {
+		if ddl > std.GetHeight() {
 			b.WriteString(
 				ufmt.Sprintf(
-					"Whitelist sign-ups close at: %s\n",
-					w.GetWhitelistDeadline().Format("15:04:05 02.01.2006\n"),
+					"Whitelist sign-ups close at block %d\n",
+					w.GetWhitelistDeadline(),
 				),
 			)
 		} else {
@@ -592,8 +597,8 @@ the `whitelist` package from before.
 ## Using Gnofaucet & Gnoweb to get test tokens
 
 For this section of the tutorial, we will use the `gnoweb` and `gnofaucet`
-CLI tools. `Gnoweb` allows us to access the aforementioned on-chain file
-system. `Gnoweb` will spin up a local front end where we will find the faucet
+CLI tools. `gnoweb` allows us to access the aforementioned on-chain file
+system. `gnoweb` will spin up a local front end where we will find the faucet
 for test tokens and all of the currently deployed packages and realms.
 
 ### Setting up Gnofaucet
@@ -627,6 +632,10 @@ Then, start the faucet, serving the `dev` chain with the `Faucet` keypair:
 ```
 gnofaucet serve --chain-id dev Faucet
 ```
+
+> Note: A common error when running the faucet can happen in case the `--home`
+path for `gnokey` and `gnofaucet` differ. See 
+[this issue](https://github.com/leohhhn/gnoland_zero_to_hero/issues/1) for clarification.
 
 ### Running Gnoweb
 
