@@ -813,8 +813,6 @@ the following output:
 
 ![TestSuccess](../../examples/gno.land/whitelist/src/testsuccess.png)
 
-
-
 After we've verified our code works (again), we are ready to deploy the code to
 the test3 testnet. Clicking on deploy will prompt a wallet connection, and then
 you will see the following:
@@ -822,16 +820,16 @@ you will see the following:
 ![TestSuccess](../../examples/gno.land/whitelist/src/deploy.png)
 
 Change the deployment path as you see fit - for this we will go with 
-`gno.land/p/demo/whitelist`. Choose `Testnet 3` for the network and click `Deploy`.
+`gno.land/p/leon/whitelist`. Choose `Testnet 3` for the network and click `Deploy`.
 
 Gno Playground has a built-in faucet, which means that even if you do not have any
 test3 GNOTs, the deployment should result in a success and you will be presented
-with a [Gnoscan link](https://gnoscan.io/transactions/details?txhash=Pw/jWWZZTGVaW5RXgQmCwA/fpOnIrjO0tSBuC+i3zAw%3D)
+with a [Gnoscan link](https://gnoscan.io/transactions/details?txhash=X3t1MKrUAtr1tNuPrfWHfJVw1I1BGgTretiARHzAtsE%3D)
 for the deployment transaction. 
 
-
-After deploying the package, we can continue with the realm code. In the Playground, 
-create `whitelistFactory.gno` and copy the code over. 
+After successfully deploying the package, we can continue with the realm code. 
+In the Playground, first remove the existing files. Then create a new file
+with the name `whitelistFactory.gno` and copy the code over. 
 
 
 
