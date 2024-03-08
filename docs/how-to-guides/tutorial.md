@@ -642,7 +642,7 @@ path for `gnokey` and `gnofaucet` differ. See
 Run the `gnoweb` command from within the `gno.land` subfolder. A local
 front end will start on `127.0.0.1:8888`.
 
-Gnoweb also provides us with a simple interface to send local testnet
+`gnoweb` also provides us with a simple interface to send local testnet
 tokens to the address that we generated in the previous steps.
 
 By navigating to `127.0.0.1:8888/faucet`, you will be able to input
@@ -652,7 +652,8 @@ By default, the faucet sends `1000000ugnot` to the provided address,
 equal to `1 GNOT` token. We will use the previously generated `Dev`
 keypair to receive tokens and deploy our code.
 
-To check the balance of your address, you can use the [query](https://docs.onbloc.xyz/docs/cli/gnokey#make-an-abci-query)
+To check the balance of your address, you can use the
+[query](https://docs.gno.land/gno-tooling/cli/gno-tooling-gnokey#make-an-abci-query)
 functionality of `gnokey` to make an ABCI query to the node.
 
 ```
@@ -726,7 +727,6 @@ If all went well, you've just written and uploaded your first Gno.Land
 package and realm. You can visit the realm path to see the `Render`
 function in action: `127.0.0.1:8888/r/demo/whitelist`. It should look something like this:
 
-
 Finally, let's interact with our realm. Again, we are using `gnokey`,
 but this time around, instead of `addpkg`, we will use the `call` subcommand,
 which will call a specific public function on a realm:
@@ -791,4 +791,4 @@ your first realm in Gno. You've become a real Gno.Land hero!
 If you'd like to see the full repository used for this tutorial,
 it can be found [here](https://github.com/leohhhn/gnoland_zero_to_hero/).
 
-> Written _August 10th 2023_, last updated _December 6th 2023_
+> Written _August 10th 2023_, last updated _March 8th 2024_
