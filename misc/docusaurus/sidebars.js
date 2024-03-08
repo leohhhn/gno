@@ -27,6 +27,7 @@ const sidebars = {
             label: 'How-to Guides',
             items: [
                 'how-to-guides/simple-contract',
+                'how-to-guides/tutorial',
                 'how-to-guides/simple-library',
                 'how-to-guides/testing-gno',
                 'how-to-guides/deploy',

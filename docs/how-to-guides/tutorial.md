@@ -1,3 +1,7 @@
+---
+id: tutorial
+---
+
 # From Zero to Gno.Land Hero
 
 In this tutorial, we will enter the world of **Gno.Land**, and build our own
@@ -295,7 +299,6 @@ package whitelist
 import (
 	"std"
 	"testing"
-	"time"
 
 	"gno.land/p/demo/testutils"
 )
@@ -303,7 +306,7 @@ import (
 func TestWhitelist_Setup(t *testing.T) {
 	var (
 		name     = "First whitelist!"
-		deadline = time.Now().Add(15)
+		deadline = std.GetHeight() + 100 // get future height
 		maxUsers = 100
 	)
 
@@ -340,8 +343,6 @@ command from the same directory:
 gno test . -v
 ```
 
-> _Note: The `gno` tool previously used to be called `gnodev`._
-
 ### WhitelistFactory Realm
 
 This is where the bulk of our functionality will be. The main thing
@@ -363,7 +364,6 @@ package whitelistfactory
 import (
 	"bytes"
 	"std"
-	"time"
 
 	"gno.land/p/demo/avl"
 	"gno.land/p/demo/ufmt"
@@ -386,7 +386,7 @@ the `init()` function.
 
 Since all actions on the Gno.Land blockchain must be deterministic,
 we are unable to use the native Go `map` functionality to store our data.
-This is why we are using custom-built [AVL trees](https://docs.onbloc.xyz/docs/packages#avl), which expose a
+This is why we are using custom-built [AVL trees](https://docs.gno.land/concepts/packages#avl), which expose a
 classic `get/set` API to the developer.
 
 We also have an `init()` function which will run upon deployment of
