@@ -196,13 +196,12 @@ package whitelist
 
 import (
 	"std"
-	"time"
 )
 
 type Whitelist struct {
 	name     string         // Name of whitelist
 	owner    std.Address    // Owner of whitelist
-	deadline time.Time      // Whitelist deadline
+	deadline int64          // Whitelist deadline in block height
 	maxUsers int64          // Max number of users in whitelist
 	userList []std.Address  // Currently signed-up users
 }
@@ -219,7 +218,7 @@ Next, we can write functions that we will need to act upon this struct:
 
 ```
 // Create a new Whitelist instance from arguments
-func NewWhitelist(name string, deadline time.Time, maxUsers int64, owner std.Address) *Whitelist {
+func NewWhitelist(name string, deadline int64, maxUsers int64, owner std.Address) *Whitelist {
 	return &Whitelist{
 		name:     name,
 		owner:    owner,
@@ -237,7 +236,7 @@ func (w *Whitelist) GetWhitelistOwner() std.Address {
 	return w.owner
 }
 
-func (w *Whitelist) GetWhitelistDeadline() time.Time {
+func (w *Whitelist) GetWhitelistDeadline() int64 {
 	return w.deadline
 }
 
