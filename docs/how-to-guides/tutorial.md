@@ -205,7 +205,7 @@ import (
 type Whitelist struct {
 	name     string         // Name of whitelist
 	owner    std.Address    // Owner of whitelist
-	deadline int64          // Whitelist deadline in block height
+	deadline int            // Whitelist deadline in block height
 	maxUsers int            // Max number of users in whitelist
 	userList []std.Address  // Currently signed-up users
 }
@@ -222,7 +222,7 @@ Next, we can write functions that we will need to act upon this struct:
 
 ```
 // Create a new Whitelist instance from arguments
-func NewWhitelist(name string, deadline int64, maxUsers int, owner std.Address) *Whitelist {
+func NewWhitelist(name string, deadline int, maxUsers int, owner std.Address) *Whitelist {
 	return &Whitelist{
 		name:     name,
 		owner:    owner,
@@ -240,7 +240,7 @@ func (w *Whitelist) GetWhitelistOwner() std.Address {
 	return w.owner
 }
 
-func (w *Whitelist) GetWhitelistDeadline() int64 {
+func (w *Whitelist) GetWhitelistDeadline() int {
 	return w.deadline
 }
 
@@ -316,7 +316,7 @@ func TestWhitelist_Setup(t *testing.T) {
     // use mock address to execute test transaction
 	std.TestSetOrigCaller(alice)
 
-	w := NewWhitelist(name, deadline, int64(maxUsers), alice)
+	w := NewWhitelist(name, int(deadline), maxUsers, alice)
 
 	if w.GetWhitelistOwner() != alice {
 		t.Fatal("invalid whitelist owner")
@@ -396,10 +396,10 @@ store all of our Whitelist instances.
 Moving on:
 
 ```
-func NewWhitelist(name string, deadline int64, maxUsers int64) (int, string) {
+func NewWhitelist(name string, deadline int, maxUsers int64) (int, string) {
 
 	// Check if deadline is in the past
-	if deadline <= std.GetHeight() {
+	if deadline <= int(std.GetHeight()) {
 		return -1, "deadline cannot be in the past"
 	}
 
@@ -727,7 +727,7 @@ If all went well, you've just written and uploaded your first Gno.Land
 package and realm. You can visit the realm path to see the `Render`
 function in action: `127.0.0.1:8888/r/demo/whitelist`. It should look something like this:
 
-![Default view](./src/defaultview.png)
+![Default view](../../examples/gno.land/whitelist/src/defaultview.png)
 
 Finally, let's interact with our realm. Again, we are using `gnokey`,
 but this time around, instead of `addpkg`, we will use the `call` subcommand,
@@ -755,7 +755,7 @@ Unix seconds representation of a specific date and time.
 If the command was successful, we can see the state update on the realm
 through `gnoweb`.
 
-![Whitelist created view](./src/whitelistcreated.png)
+![Whitelist created view](../../examples/gno.land/whitelist/src/whitelistcreated.png)
 
 Finally, we can try to sign up to the whitelist:
 
@@ -774,7 +774,7 @@ Dev
 We call the `SignUpToWhitelist` with the `whitelistID` argument being `0`.
 After the transaction goes through, we can see the state update:
 
-![User signup view](./src/signedup.png)
+![User signup view](../../examples/gno.land/whitelist/src/signedup.png)
 
 Finally, if you'd wish to restart and wipe the node data, shut the gnoland
 node down, and run the following from within the `gno.land` folder:
@@ -788,6 +788,54 @@ Then, to start the node again, run:
 ```
 gnoland start
 ```
+
+## Deploying to a remote testnet
+
+In this section, you will learn how to deploy the whitelist package and realm
+to the Gno.land test3 testnet through Gno.land's online editor, Gno Playground.
+
+To follow along, you will need to install a Gno.land web browser wallet, such as
+[Adena](https://www.adena.app/), and create a keypair. This will allow you to
+interact with the Playground.
+
+Next, visit the [Playground](https://play.gno.land). You will be greeted with a
+simple `package.gno` file.
+
+![DefaultPlayground](../../examples/gno.land/whitelist/src/playground_default.png)
+
+First we should test and deploy the package. To do this, delete `package.gno`,
+and create files like before: `whitelist.gno` & `whitelist_test.gno`. Then,
+paste in the respective code.
+
+Gno Playground allows you to test, deploy, and share code in your browser.
+Clicking on "Test" will open a terminal and after a few seconds you should see 
+the following output:
+
+![TestSuccess](../../examples/gno.land/whitelist/src/testsuccess.png)
+
+
+
+After we've verified our code works (again), we are ready to deploy the code to
+the test3 testnet. Clicking on deploy will prompt a wallet connection, and then
+you will see the following:
+
+![TestSuccess](../../examples/gno.land/whitelist/src/deploy.png)
+
+Change the deployment path as you see fit - for this we will go with 
+`gno.land/p/demo/whitelist`. Choose `Testnet 3` for the network and click `Deploy`.
+
+Gno Playground has a built-in faucet, which means that even if you do not have any
+test3 GNOTs, the deployment should result in a success and you will be presented
+with a [Gnoscan link](https://gnoscan.io/transactions/details?txhash=Pw/jWWZZTGVaW5RXgQmCwA/fpOnIrjO0tSBuC+i3zAw%3D)
+for the deployment transaction. 
+
+
+After deploying the package, we can continue with the realm code. In the Playground, 
+create `whitelistFactory.gno` and copy the code over. 
+
+
+
+
 
 This concludes our tutorial. Once again, congratulations on writing
 your first realm in Gno. You've become a real Gno.Land hero!
