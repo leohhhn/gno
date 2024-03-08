@@ -399,7 +399,7 @@ Moving on:
 func NewWhitelist(name string, deadline int64, maxUsers int64) (int, string) {
 
 	// Check if deadline is in the past
-	if deadline <= time.Now() {
+	if deadline <= std.GetHeight() {
 		return -1, "deadline cannot be in the past"
 	}
 
@@ -414,7 +414,7 @@ func NewWhitelist(name string, deadline int64, maxUsers int64) (int, string) {
 	}
 
 	// Create new whitelist instance
-	w := whitelist.NewWhitelist(name, time.Unix(deadline, 0), maxUsers, txSender)
+	w := whitelist.NewWhitelist(name, deadline, maxUsers, txSender)
 
 	// Update AVL tree with new state
 	whitelistTree.Set(ufmt.Sprintf("%d", id), w)
@@ -431,17 +431,12 @@ first letter in its name - meaning anyone can call it.
 Similar to Solidity's `msg.sender` functionality, we can use
 `std.GetOrigCaller()` to get the address of the transaction sender.
 
-You may have noticed the use of `time.Now().Unix()`, which is a
-Golang native function that returns the local system time.
-In this case, GnoVM interprets that function and returns the
-current block timestamp, in Unix seconds.
-
 Next, we need to write the function that users will use to
 sign up to specific whitelists.
 
 To sign up for a whitelist, four conditions must be met:
 
-1. The whitelist with the specificed ID must exist
+1. The whitelist with the specified ID must exist
 2. The sign-up deadline must be in the future
 3. The user cannot already be on the whitelist
 4. The whitelist must have enough room for the user to sign up
