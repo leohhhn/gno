@@ -727,6 +727,8 @@ If all went well, you've just written and uploaded your first Gno.Land
 package and realm. You can visit the realm path to see the `Render`
 function in action: `127.0.0.1:8888/r/demo/whitelist`. It should look something like this:
 
+![Default view](./src/defaultview.png)
+
 Finally, let's interact with our realm. Again, we are using `gnokey`,
 but this time around, instead of `addpkg`, we will use the `call` subcommand,
 which will call a specific public function on a realm:
@@ -736,7 +738,7 @@ gnokey maketx call \
 --pkgpath "gno.land/r/demo/whitelist" \
 --func "NewWhitelist" \
 --args "First whitelist!" \
---args 1691588726 \
+--args 500 \
 --args 10 \
 --gas-fee 10000000ugnot \
 --gas-wanted 800000 \
@@ -753,6 +755,7 @@ Unix seconds representation of a specific date and time.
 If the command was successful, we can see the state update on the realm
 through `gnoweb`.
 
+![Whitelist created view](./src/whitelistcreated.png)
 
 Finally, we can try to sign up to the whitelist:
 
@@ -771,6 +774,7 @@ Dev
 We call the `SignUpToWhitelist` with the `whitelistID` argument being `0`.
 After the transaction goes through, we can see the state update:
 
+![User signup view](./src/signedup.png)
 
 Finally, if you'd wish to restart and wipe the node data, shut the gnoland
 node down, and run the following from within the `gno.land` folder:
