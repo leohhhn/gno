@@ -840,6 +840,6 @@ This concludes our tutorial. Once again, congratulations on writing
 your first realm in Gno. You've become a real Gno.Land hero!
 
 If you'd like to see the full repository used for this tutorial,
-it can be found [here](https://github.com/leohhhn/gnoland_zero_to_hero/).
+it can be found [here](https://github.com/leohhhn/gno/tree/from_zero_to_gnoland_hero).
 
 > Written _August 10th 2023_, last updated _March 10th 2024_
