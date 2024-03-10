@@ -395,7 +395,7 @@ store all of our Whitelist instances.
 Moving on:
 
 ```
-func NewWhitelist(name string, deadline int, maxUsers int64) (int, string) {
+func NewWhitelist(name string, deadline int, maxUsers int) (int, string) {
 
 	// Check if deadline is in the past
 	if deadline <= int(std.GetHeight()) {
@@ -416,7 +416,7 @@ func NewWhitelist(name string, deadline int, maxUsers int64) (int, string) {
 	w := whitelist.NewWhitelist(name, deadline, maxUsers, txSender)
 
 	// Update AVL tree with new state
-	success := whitelistTree.Set(strconv.Itoa(id)), w)
+	success := whitelistTree.Set(strconv.Itoa(id), w)
     if success {
 	    return id, "successfully created whitelist!"
     }
@@ -447,7 +447,7 @@ in the AVL tree to its new state.
 ```
 func SignUpToWhitelist(whitelistID int) string {
 	// Get ID and convert to string
-	id := strconv.Atoi(whitelistID)
+	id := strconv.Itoa(whitelistID)
 	
 	// Get txSender
 	txSender := std.GetOrigCaller()
@@ -471,7 +471,7 @@ func SignUpToWhitelist(whitelistID int) string {
 	}
 
 	// If deadline has passed
-	if ddl <= std.GetHeight() {
+	if ddl <= int(std.GetHeight()) {
 		return "whitelist already closed"
 	}
 
@@ -544,7 +544,7 @@ func renderHomepage() string {
 		)
 
 		// Check if whitelist deadline is past due
-		if ddl > std.GetHeight() {
+		if ddl > int(std.GetHeight()) {
 			b.WriteString(
 				ufmt.Sprintf(
 					"Whitelist sign-ups close at block %d\n",
@@ -821,7 +821,7 @@ you will see the following:
 
 Change the deployment path as you see fit - for this we will go with 
 `gno.land/p/leon/whitelist`. Keep in mind that this is the path you will use
-to later import the package and use it for the whitelist realm.
+to later import the package and use it for the `WhitelistFactory` realm.
 
 Choose `Testnet 3` for the network and click `Deploy`.
 
@@ -833,15 +833,12 @@ for the deployment transaction.
 After successfully deploying the package, we can continue with the realm code. 
 
 Delete the old files, and create a new one - `whitelistfactory.gno`.
-Paste in the code, or simply find it on [this link](https://play.gno.land/p/ZAiVLiGzpwO).
+Paste in the code, or simply find it on [this link](https://play.gno.land/p/M_ehuoP4jsM).
 
-![RealmCode](../../examples/gno.land/whitelist/src/realmcode.png)
+![RealmCode](../../examples/gno.land/whitelist/src/realm_code.png)
 
 After inserting your package path, you can click deploy the realm to your chosen
 path. To view the realm on chain, visit `https://test3.<your_realm_path>`.
-
-
-TODO UPDATE REALM CODE HERE TO MATCH THE PLAYGROUBND!!!
 
 This concludes our tutorial. Once again, congratulations on writing
 your first realm in Gno. You've become a real Gno.Land hero!
@@ -849,4 +846,4 @@ your first realm in Gno. You've become a real Gno.Land hero!
 If you'd like to see the full repository used for this tutorial,
 it can be found [here](https://github.com/leohhhn/gnoland_zero_to_hero/).
 
-> Written _August 10th 2023_, last updated _March 8th 2024_
+> Written _August 10th 2023_, last updated _March 10th 2024_
