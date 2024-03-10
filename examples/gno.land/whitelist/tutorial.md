@@ -486,7 +486,6 @@ func SignUpToWhitelist(whitelistID int) string {
 	}
     return "failed to sign up"
 }
-
 ```
 
 Finally, we will write a `Render` function to display the state
