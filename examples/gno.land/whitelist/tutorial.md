@@ -1,5 +1,7 @@
 # From Zero to Gno.Land Hero
 
+![RealmCode](src/banner.png)
+
 In this tutorial, we will enter the world of **Gno.Land**, and build our own
 smart contract using the **Gno** programming language. Gno is an interpreted
 version of Golang that shares 99% of the functionality with Go, allowing us
