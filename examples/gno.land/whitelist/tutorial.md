@@ -726,7 +726,7 @@ If all went well, you've just written and uploaded your first Gno.Land
 package and realm. You can visit the realm path to see the `Render`
 function in action: `127.0.0.1:8888/r/demo/whitelist`. It should look something like this:
 
-![Default view](../../examples/gno.land/whitelist/src/defaultview.png)
+![Default view](src/defaultview.png)
 
 Finally, let's interact with our realm. Again, we are using `gnokey`,
 but this time around, instead of `addpkg`, we will use the `call` subcommand,
@@ -754,7 +754,7 @@ Unix seconds representation of a specific date and time.
 If the command was successful, we can see the state update on the realm
 through `gnoweb`.
 
-![Whitelist created view](../../examples/gno.land/whitelist/src/whitelistcreated.png)
+![Whitelist created view](src/whitelistcreated.png)
 
 Finally, we can try to sign up to the whitelist:
 
@@ -773,7 +773,7 @@ Dev
 We call the `SignUpToWhitelist` with the `whitelistID` argument being `0`.
 After the transaction goes through, we can see the state update:
 
-![User signup view](../../examples/gno.land/whitelist/src/signedup.png)
+![User signup view](src/signedup.png)
 
 Finally, if you'd wish to restart and wipe the node data, shut the gnoland
 node down, and run the following from within the `gno.land` folder:
@@ -800,7 +800,7 @@ interact with the Playground.
 Next, visit the [Playground](https://play.gno.land). You will be greeted with a
 simple `package.gno` file.
 
-![DefaultPlayground](../../examples/gno.land/whitelist/src/playground_default.png)
+![DefaultPlayground](src/playground_default.png)
 
 First we should test and deploy the `whitelist` package. To do this, delete `package.gno`,
 and create files like before: `whitelist.gno` & `whitelist_test.gno`. Then,
@@ -811,13 +811,13 @@ Gno Playground allows you to test, deploy, and share code in your browser.
 Clicking on "Test" will open a terminal and after a few seconds you should see 
 the following output:
 
-![TestSuccess](../../examples/gno.land/whitelist/src/testsuccess.png)
+![TestSuccess](src/testsuccess.png)
 
 After we've verified our code works, we are ready to deploy the package code to
 the test3 testnet. Clicking on the "Deploy" button will prompt a wallet connection, and then
 you will see the following:
 
-![TestSuccess](../../examples/gno.land/whitelist/src/deploy.png)
+![TestSuccess](src/deploy.png)
 
 Change the deployment path as you see fit - for this we will go with 
 `gno.land/p/leon/whitelist`. Keep in mind that this is the path you will use
@@ -835,7 +835,7 @@ After successfully deploying the package, we can continue with the realm code.
 Delete the old files, and create a new one - `whitelistfactory.gno`.
 Paste in the code, or simply find it on [this link](https://play.gno.land/p/M_ehuoP4jsM).
 
-![RealmCode](../../examples/gno.land/whitelist/src/realm_code.png)
+![RealmCode](src/realm_code.png)
 
 After inserting your package path, you can click deploy the realm to your chosen
 path. To view the realm on chain, visit `https://test3.<your_realm_path>`.
