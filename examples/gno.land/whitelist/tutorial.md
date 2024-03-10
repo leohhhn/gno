@@ -1,7 +1,3 @@
----
-id: tutorial
----
-
 # From Zero to Gno.Land Hero
 
 In this tutorial, we will enter the world of **Gno.Land**, and build our own
