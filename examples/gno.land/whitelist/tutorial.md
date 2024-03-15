@@ -197,12 +197,13 @@ package whitelist
 
 import (
 	"std"
+	"time"
 )
 
 type Whitelist struct {
 	name     string         // Name of whitelist
 	owner    std.Address    // Owner of whitelist
-	deadline int            // Whitelist deadline in block height
+	deadline time.Time            // Whitelist deadline in Unix time
 	maxUsers int            // Max number of users in whitelist
 	userList []std.Address  // Currently signed-up users
 }
@@ -219,7 +220,7 @@ Next, we can write functions that we will need to act upon this struct:
 
 ```
 // Create a new Whitelist instance from arguments
-func NewWhitelist(name string, deadline int, maxUsers int, owner std.Address) *Whitelist {
+func NewWhitelist(name string, deadline time.Time, maxUsers int, owner std.Address) *Whitelist {
 	return &Whitelist{
 		name:     name,
 		owner:    owner,
@@ -296,6 +297,7 @@ package whitelist
 import (
 	"std"
 	"testing"
+	"time"
 
 	"gno.land/p/demo/testutils"
 )
@@ -303,7 +305,7 @@ import (
 func TestWhitelist_Setup(t *testing.T) {
 	var (
 		name     = "First whitelist!"
-		deadline = std.GetHeight() + 100 // get future height
+		deadline = time.Now(15) // get future dates
 		maxUsers = 100
 	)
 
@@ -361,6 +363,7 @@ package whitelistfactory
 import (
 	"bytes"
 	"std"
+	"time"
 
 	"gno.land/p/demo/avl"
 	"gno.land/p/demo/ufmt"
@@ -393,10 +396,10 @@ store all of our Whitelist instances.
 Moving on:
 
 ```
-func NewWhitelist(name string, deadline int, maxUsers int) (int, string) {
+func NewWhitelist(name string, deadline int64, maxUsers int) (int, string) {
 
 	// Check if deadline is in the past
-	if deadline <= int(std.GetHeight()) {
+	if deadline <= time.Now.Unix() {
 		return -1, "deadline cannot be in the past"
 	}
 
@@ -411,14 +414,12 @@ func NewWhitelist(name string, deadline int, maxUsers int) (int, string) {
 	}
 
 	// Create new whitelist instance
-	w := whitelist.NewWhitelist(name, deadline, maxUsers, txSender)
+	w := whitelist.NewWhitelist(name, time.Unix(deadline, 0), maxUsers, txSender)
 
 	// Update AVL tree with new state
-	success := whitelistTree.Set(strconv.Itoa(id), w)
-    if success {
-	    return id, "successfully created whitelist!"
-    }
-    return -1, "could not create new whitelist"
+	whitelistTree.Set(ufmt.Sprintf("%d", id), w)
+
+	return id, "successfully created whitelist!"
 }
 ```
 
@@ -445,7 +446,7 @@ in the AVL tree to its new state.
 ```
 func SignUpToWhitelist(whitelistID int) string {
 	// Get ID and convert to string
-	id := strconv.Itoa(whitelistID)
+	id := ufmt.Sprintf("%d", whitelistID)
 	
 	// Get txSender
 	txSender := std.GetOrigCaller()
@@ -469,7 +470,7 @@ func SignUpToWhitelist(whitelistID int) string {
 	}
 
 	// If deadline has passed
-	if ddl <= int(std.GetHeight()) {
+	if ddl.Unix() <= time.Now().Unix() {
 		return "whitelist already closed"
 	}
 
@@ -541,11 +542,11 @@ func renderHomepage() string {
 		)
 
 		// Check if whitelist deadline is past due
-		if ddl > int(std.GetHeight()) {
+		if ddl.Unix() > time.Now().Unix() {
 			b.WriteString(
 				ufmt.Sprintf(
-					"Whitelist sign-ups close at block %d\n",
-					w.GetWhitelistDeadline(),
+					"Whitelist sign-ups close at : %s\n",
+					w.GetWhitelistDeadline().Format("15:04:05 02.01.2006\n"),
 				),
 			)
 		} else {
