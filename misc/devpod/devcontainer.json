@@ -1,0 +1,15 @@
+{
+  "name": "Ubuntu with Go",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {}
+  },
+  "settings": {},
+  "extensions": [],
+  "postCreateCommand": [
+    "git clone https://github.com/gnolang/gno.git /workspace/repo && cd /workspace/repo",
+    "cd gno.land && make build && make install",
+    "cd ../gnovm && make build && make install",
+  ],
+  "remoteUser": "root"
+}
