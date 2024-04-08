@@ -165,7 +165,7 @@ func InitChainer(baseApp *sdk.BaseApp, acctKpr auth.AccountKeeperI, bankKpr bank
 					panic(res.Log)
 				}
 			} else {
-				ctx.Logger().Info("SUCCESS:", "value", string(amino.MustMarshalJSON(tx)))
+				//ctx.Logger().Info("SUCCESS:", "value", string(amino.MustMarshalJSON(tx)))
 			}
 		}
 		// Done!

@@ -204,7 +204,7 @@ func (vm *VMKeeper) AddPackage(ctx sdk.Context, msg MsgAddPackage) error {
 	defer m2.Release()
 	m2.RunMemPackage(memPkg, true)
 
-	ctx.Logger().Info("CPUCYCLES", "addpkg", m2.Cycles)
+	//ctx.Logger().Info("CPUCYCLES", "addpkg", m2.Cycles)
 	return nil
 }
 
@@ -289,7 +289,7 @@ func (vm *VMKeeper) Call(ctx sdk.Context, msg MsgCall) (res string, err error) {
 		m.Release()
 	}()
 	rtvs := m.Eval(xn)
-	ctx.Logger().Info("CPUCYCLES call", "num-cycles", m.Cycles)
+	ctx.Logger().Info("CPUCYCLES", "path", pkgPath, "func", msg.Func, "num-cycles", m.Cycles)
 	for i, rtv := range rtvs {
 		res = res + rtv.String()
 		if i < len(rtvs)-1 {
@@ -353,7 +353,7 @@ func (vm *VMKeeper) Run(ctx sdk.Context, msg MsgRun) (res string, err error) {
 		})
 	defer m.Release()
 	_, pv := m.RunMemPackage(memPkg, false)
-	ctx.Logger().Info("CPUCYCLES", "addpkg", m.Cycles)
+	//ctx.Logger().Info("CPUCYCLES", "addpkg", m.Cycles)
 
 	m2 := gno.NewMachineWithOptions(
 		gno.MachineOptions{
@@ -374,9 +374,9 @@ func (vm *VMKeeper) Run(ctx sdk.Context, msg MsgRun) (res string, err error) {
 		m2.Release()
 	}()
 	m2.RunMain()
-	ctx.Logger().Info("CPUCYCLES call",
-		"cycles", m2.Cycles,
-	)
+	//ctx.Logger().Info("CPUCYCLES call",
+	//	"cycles", m2.Cycles,
+
 	res = buf.String()
 	return res, nil
 }
