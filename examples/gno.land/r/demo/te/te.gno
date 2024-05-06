@@ -1,17 +1,19 @@
-package event
+package events
 
-import (
-	"std"
-	"strconv"
-)
+import "std"
 
-var count int
+var usernames map[std.Address]string
 
-func Emitter(value2 string) {
-	count += 1
-	// Here we define a unique identifier for our event
-	event := "GBE-chain-02-events"
+func RegisterUserName(username string) {
+	caller := std.PrevRealm().Addr()
 
-	// `Emit` takes in a string name, and an even number of key:value string pairs as arguments to emit
-	std.Emit(event, "timesCalled", strconv.Itoa(count), "userArgument", value2)
+	if usernames[caller] != "" {
+		panic("you have already registered a username")
+	}
+	if username == "" {
+		panic("username cannot be empty")
+	}
+
+	usernames[caller] = username
+	std.Emit("Registration", "registrant", caller.String(), "username", username)
 }
