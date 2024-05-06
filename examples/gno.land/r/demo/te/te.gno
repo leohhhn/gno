@@ -1,19 +1,47 @@
 package events
 
-import "std"
+import (
+	"std"
+)
 
-var usernames map[std.Address]string
+var owner std.Address
 
-func RegisterUserName(username string) {
+func init() {
+	owner = std.PrevRealm().Addr()
+}
+
+func ChangeOwner(newOwner std.Address) {
 	caller := std.PrevRealm().Addr()
 
-	if usernames[caller] != "" {
-		panic("you have already registered a username")
-	}
-	if username == "" {
-		panic("username cannot be empty")
+	if caller != owner {
+		panic("access denied")
 	}
 
-	usernames[caller] = username
-	std.Emit("Registration", "registrant", caller.String(), "username", username)
+	h := int(std.GetHeight())
+	owner = newOwner
+
+	std.Emit("OwnershipChange", "oldOwner", caller.String(), "newOwner", newOwner.String())
 }
+
+//"Events": [
+//                            {
+//                                "@type": "/tm.gnoEvent",
+//                                "type": "OwnershipChange",
+//                                "pkg_path": "gno.land/r/demo/te",
+//                                "func": "ChangeOwner",
+//                                "attrs": [
+//                                    {
+//                                        "key": "oldOwner",
+//                                        "value": "g1jg8mtutu9khhfwc4nxmuhcpftf0pajdhfvsqf5"
+//                                    },
+//                                    {
+//                                        "key": "newOwner",
+//                                        "value": "g1zzqd6phlfx0a809vhmykg5c6m44ap9756s7cjj"
+//                                    },
+//                                    {
+//                                        "key": "height",
+//                                        "value": "43"
+//                                    }
+//                                ]
+//                            }
+//                        ],
