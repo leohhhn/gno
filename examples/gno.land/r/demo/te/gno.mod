@@ -1,1 +1,1 @@
-module gno.land/r/demo/te
+module gno.land/r/demo/coin
