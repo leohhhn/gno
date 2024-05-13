@@ -16,7 +16,7 @@ var (
 
 func init() {
 	// adminAddr = std.GetOrigCaller() // FIXME: find a way to use this from the main's genesis.
-	adminAddr = "g1u7y667z64x2h7vc6fmpcprgey4ck233jaww9zq"
+	adminAddr = "g125em6arxsnj49vx35f0n0z34putv5ty3376fg5"
 }
 
 func AdminSetAdminAddr(addr std.Address) {
