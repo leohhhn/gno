@@ -7,8 +7,8 @@ import (
 )
 
 func DeriveAddr() std.Address {
-	realmAddr := std.DerivePkgAddr("gno.land/p/demo/ex1") // g1487zpvck3mg8e3vcsrlwv8ekwexrfwae77x7y0
-	return realmAddr
+	addr := std.DerivePkgAddr("gno.land/p/demo/ex1") // g1487zpvck3mg8e3vcsrlwv8ekwexrfwae77x7y0
+	return addr
 }
 
 func GetTeRealmStack() (std.Realm, std.Realm) {
