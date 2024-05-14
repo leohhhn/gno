@@ -1,6 +1,9 @@
 package te
 
-import "std"
+import (
+	"gno.land/p/demo/ufmt"
+	"std"
+)
 
 func DeriveAddr() std.Address {
 	realmAddr := std.DerivePkgAddr("gno.land/p/demo/te") // g1aq9ap83e0fx5quv3q9htlzcr7xqn7s38gn70tj
@@ -30,8 +33,11 @@ func GetRealmStack() (std.Realm, std.Realm) {
 // (struct{("g1jg8mtutu9khhfwc4nxmuhcpftf0pajdhfvsqf5" std.Address),("" string)} std.Realm)
 // So, packages themselves are not realms, but coincidentally an address can be derived from their pkgpath
 
-func GetCallerStack() (std.Address, std.Address) {
-	return std.GetCallerAt(1), std.GetCallerAt(2)
+func GetCallerStack() string {
+	c1 := std.GetCallerAt(1)
+	c2 := std.GetCallerAt(2)
+	c3 := std.GetCallerAt(3)
+	return ufmt.Sprintf("Caller at 1: %s Caller at 2: %s Caller at 3: %s", c1.String(), c2.String(), c3.String())
 }
 
 // gnokey maketx call -pkgpath "gno.land/p/demo/te" -func "GetCallerStack" -gas-fee 1000000ugnot -gas-wanted 2000000 -broadcast -chainid "dev" -remote "tcp://127.0.0.1:36657" test1
