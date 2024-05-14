@@ -1,3 +1,3 @@
-module gno.land/r/demo/terealm
+module gno.land/r/leon/test/realms
 
 
