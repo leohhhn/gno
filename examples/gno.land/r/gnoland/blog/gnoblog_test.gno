@@ -135,7 +135,14 @@ Published by g1u7y667z64x2h7vc6fmpcprgey4ck233jaww9zq to Gnoland's Blog
 
 	// edit post.
 	{
-		ModEditPost("slug2", "title2++", "body2++", "2009-11-10T23:00:00Z", "manfred", "tag1,tag4")
+		slug := "slug2"
+		newTitle := "title2++"
+		newBody := "body2++"
+		newPubDate := "2009-11-10T23:00:00Z"
+		newAuthor := "manfred"
+		newTags := "tag1,tag4"
+
+		ModEditPost(slug, newTitle, newBody, newPubDate, newAuthor, newTags)
 		got := Render("p/slug2")
 		expected := `<main class='gno-tmpl-page'>
 
@@ -170,6 +177,14 @@ Published by g1u7y667z64x2h7vc6fmpcprgey4ck233jaww9zq to Gnoland's Blog
 </main>
 	`
 		assertMDEquals(t, got, expected)
+
+		got = Render("")
+
+		if strings.Count(got, newTitle) != 1 {
+			t.Errorf("expected %s exactly once", newTitle)
+		}
+
+		println(got)
 	}
 
 	{ // Test remove functionality

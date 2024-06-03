@@ -1,0 +1,69 @@
+loadpkg gno.land/p/demo/avl
+loadpkg gno.land/p/demo/ufmt
+
+loadpkg gno.land/r/demo/pointerissue $WORK
+
+gnoland start
+
+## Add post
+gnokey maketx call -pkgpath gno.land/r/demo/pointerissue -func AddPost -args "key1" -args "test" -args 1 -gas-fee 1000000ugnot -gas-wanted 2000000 -broadcast -chainid=tendermint_test test1
+
+## Remove post
+gnokey maketx call -pkgpath gno.land/r/demo/pointerissue -func RemovePost -args "key1" -gas-fee 1000000ugnot -gas-wanted 2000000 -broadcast -chainid=tendermint_test test1
+
+## Add identical post again
+gnokey maketx call -pkgpath gno.land/r/demo/pointerissue -func AddPost -args "key1" -args "test" -args 1 -gas-fee 1000000ugnot -gas-wanted 2000000 -broadcast -chainid=tendermint_test test1
+
+-- pointerissue.gno --
+package pointerissue
+
+import (
+  "gno.land/p/demo/avl"
+  "gno.land/p/demo/ufmt"
+  "time"
+)
+
+type Post struct {
+  a string
+  b int
+  t time.Time
+}
+
+var tree1 *avl.Tree
+var tree2 *avl.Tree
+
+func init() {
+    tree1 = avl.NewTree()
+    tree2 = avl.NewTree()
+}
+
+func AddPost(key, a string, b int) {
+  now := time.Now()
+
+  post := &Post{
+    a: a,
+    b: b,
+    t: now,
+  }
+
+  tree1.Set(key, post)
+  tree2.Set(key, post)
+}
+
+func RemovePost(key string) {
+  _, _ = tree1.Remove(key)
+  _, _ = tree2.Remove(key)
+}
+
+func Render(path string) string {
+  i := 0
+  output:= ""
+  tree1.ReverseIterate("", "", func(key string, value interface{}) bool {
+		p := value.(*Post)
+		output += ufmt.Sprintf("a: %s, b: %d, t: %s", p.a, p.b, p.t.Format("02 Jan 2006"))
+		i++
+		return true
+	})
+
+	return output
+}
