@@ -111,23 +111,71 @@ func (b Blog) RenderTag(res *mux.ResponseWriter, req *mux.Request) {
 	nb := 0
 	b.Posts.Iterate("", "", func(key string, value interface{}) bool {
 		post := value.(*Post)
+
 		if !post.HasTag(slug) {
 			return false
 		}
+
 		res.Write(post.RenderListItem())
 		nb++
+
 		return false
 	})
+
 	if nb == 0 {
 		res.Write("No posts.")
 	}
 }
 
+func (b Blog) RenderAuthor(res *mux.ResponseWriter, req *mux.Request) {
+	slug := req.GetVar("slug")
+
+	if slug == "" {
+		res.Write("404")
+		return
+	}
+
+	if !b.NoBreadcrumb {
+		breadStr := breadcrumb([]string{
+			ufmt.Sprintf("[%s](%s)", b.Title, b.Prefix),
+			"a",
+			slug,
+		})
+
+		res.Write(breadStr)
+	}
+
+	nb := 0
+	b.Posts.Iterate("", "", func(key string, value interface{}) bool {
+		post := value.(*Post)
+
+		if !post.HasAuthor(slug) {
+			return false
+		}
+
+		res.Write(post.RenderListItem())
+		nb++
+
+		return false
+	})
+
+	if nb == 0 {
+		res.Write("No posts.")
+	}
+}
+
+func (b Blog) RenderAuthorSimple(author string) string {
+	return b.RenderAuthor()
+}
+
 func (b Blog) Render(path string) string {
 	router := mux.NewRouter()
+
 	router.HandleFunc("", b.RenderHome)
 	router.HandleFunc("p/{slug}", b.RenderPost)
 	router.HandleFunc("t/{slug}", b.RenderTag)
+	router.HandleFunc("a/{slug}", b.RenderAuthor)
+
 	return router.Render(path)
 }
 
@@ -288,6 +336,20 @@ func (p *Post) HasTag(tag string) bool {
 			return true
 		}
 	}
+	return false
+}
+
+func (p *Post) HasAuthor(author string) bool {
+	if p == nil {
+		return false
+	}
+
+	for _, a := range p.Authors {
+		if a == author {
+			return true
+		}
+	}
+
 	return false
 }
 

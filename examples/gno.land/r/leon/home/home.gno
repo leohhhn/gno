@@ -8,6 +8,7 @@ import (
 
 	"gno.land/r/demo/art/gnoface"
 	"gno.land/r/demo/art/millipede"
+	"gno.land/r/gnoland/blog"
 	"gno.land/r/leon/config"
 )
 
@@ -58,10 +59,9 @@ func Render(path string) string {
 
 func renderBlogPosts() string {
 	out := ""
-	//out += "## Leon's Blog Posts"
+	out += "## Leon's Blog Posts"
 
-	// todo fetch blog posts authored by @leohhhn
-	// and render them
+	blog.RenderPostsByAuthor("leohhhn") // leon's gh username and username on blog posts
 	return out
 }
 

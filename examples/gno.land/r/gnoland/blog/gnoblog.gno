@@ -28,6 +28,10 @@ func RenderLastPostsWidget(limit int) string {
 	return b.RenderLastPostsWidget(limit)
 }
 
+func RenderPostsByAuthor(author string) string {
+	return b.RenderAuthorSimple(author)
+}
+
 func PostExists(slug string) bool {
 	if b.GetPost(slug) == nil {
 		return false
