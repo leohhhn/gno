@@ -12,7 +12,8 @@ type token struct {
 	banker *Banker
 }
 
-// var _ Token = (*token)(nil)
+var _ Token = (*token)(nil)
+
 func (t *token) GetName() string     { return t.banker.name }
 func (t *token) GetSymbol() string   { return t.banker.symbol }
 func (t *token) GetDecimals() uint   { return t.banker.decimals }
