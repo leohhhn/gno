@@ -169,6 +169,7 @@ func (vh vmHandler) queryRender(ctx sdk.Context, req abci.RequestQuery) (res abc
 // queryFuncs returns public facing function signatures as JSON.
 func (vh vmHandler) queryFuncs(ctx sdk.Context, req abci.RequestQuery) (res abci.ResponseQuery) {
 	pkgPath := string(req.Data)
+	fmt.Println("QUERYING FUNCS:" + pkgPath)
 	fsigs, err := vh.vm.QueryFuncs(ctx, pkgPath)
 	if err != nil {
 		res = sdk.ABCIResponseQueryFromError(err)

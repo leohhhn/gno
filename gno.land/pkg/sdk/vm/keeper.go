@@ -409,6 +409,7 @@ func (vm *VMKeeper) Call(ctx sdk.Context, msg MsgCall) (res string, err error) {
 	pkgPath := msg.PkgPath // to import
 	fnc := msg.Func
 	gnostore := vm.getGnoTransactionStore(ctx)
+
 	// Get the package and function type.
 	pv := gnostore.GetPackage(pkgPath, false)
 	pl := gno.PackageNodeLocation(pkgPath)
@@ -643,6 +644,7 @@ func (vm *VMKeeper) QueryFuncs(ctx sdk.Context, pkgPath string) (fsigs FunctionS
 			"package is not realm: %s", pkgPath))
 		return nil, err
 	}
+
 	// Get Package.
 	pv := store.GetPackage(pkgPath, false)
 	if pv == nil {
@@ -650,16 +652,43 @@ func (vm *VMKeeper) QueryFuncs(ctx sdk.Context, pkgPath string) (fsigs FunctionS
 			"package not found: %s", pkgPath))
 		return nil, err
 	}
+
 	// Iterate over public functions.
 	pblock := pv.GetBlock(store)
 	for _, tv := range pblock.Values {
+
+		//if t, ok := tv.T.(*gno.PointerType); ok {
+		//	fmt.Println(t.String())
+		//	fmt.Println(tv.V.String())
+		//}
+		//
+		//if t, ok := tv.T.(*gno.InterfaceType); ok {
+		//	fmt.Println("t.Methods")
+		//	fmt.Println(t.Methods)
+		//}
+
+		// Get methods of declared types
+		//if typ, ok := tv.T.(*gno.PointerType); ok {
+		//	fmt.Printf("typ.Elem(): %T\n", typ.Elem())
+		//	if i, ok := typ.Elem().(*gno.DeclaredType); ok {
+		//		fmt.Println(i.Methods)
+		//	}
+		//}
+
+		//if p, ok := tv.V.(gno.PointerValue); ok {
+		//	fmt.Println(p.String())
+		//	fmt.Println(p.Deref())
+		//}
+
 		if tv.T.Kind() != gno.FuncKind {
 			continue // must be function
 		}
+
 		fv := tv.GetFunc()
 		if fv.IsMethod {
 			continue // cannot be method
 		}
+
 		fname := string(fv.Name)
 		first := fname[0:1]
 		if strings.ToUpper(first) != first {

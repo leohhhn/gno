@@ -14,11 +14,29 @@ import (
 var (
 	banker *grc20.Banker // private banker.
 	Token  grc20.Token   // public safe-object.
+	Str    Mystr
 )
+
+type Mystr struct {
+	num int
+}
+
+var MyMethod = func() error {
+	return nil
+}
+
+func (m *Mystr) EmptyMthd() {
+	return
+}
+
+func (m *Mystr) unexposedMthd(arg int, arg2 []string) {
+	return
+}
 
 func init() {
 	banker = grc20.NewBanker("Bar", "BAR", 4)
 	Token = banker.Token()
+	Str = Mystr{num: 1}
 }
 
 func Faucet() string {
