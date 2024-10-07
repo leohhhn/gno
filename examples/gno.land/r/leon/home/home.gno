@@ -15,6 +15,7 @@ var (
 	pfp        string // link to profile picture
 	pfpCaption string // profile picture caption
 	abtMe      [2]string
+	magic      func() string
 )
 
 func init() {
@@ -31,6 +32,10 @@ My contributions to gno.land can mainly be found
 TODO import r/gh
 `,
 	}
+
+	magic = func() string {
+		return "Nothing to see here :)"
+	}
 }
 
 func UpdatePFP(url, caption string) {
@@ -43,6 +48,10 @@ func UpdateAboutMe(col1, col2 string) {
 	config.AssertAuthorized()
 	abtMe[0] = col1
 	abtMe[1] = col2
+}
+
+func UpdateMagic(mgc func() string) {
+	magic = mgc
 }
 
 func Render(path string) string {
@@ -93,7 +102,7 @@ func renderArt() string {
 
 	out += renderGnoFace()
 	out += renderMillipede()
-	out += "Empty spot :/"
+	out += magic()
 
 	out += "</div><!-- /columns-3 -->\n\n"
 
