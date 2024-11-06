@@ -64,7 +64,7 @@ func extractLocalLinks(fileContent []byte) []string {
 	return links
 }
 
-func lintLocalLinks(filepathToLinks map[string][]string, docsPath string) (string, error) {
+func lintLocalLinks(filepathToLinks map[string][]string) (string, error) {
 	var (
 		found  bool
 		output bytes.Buffer
@@ -72,7 +72,7 @@ func lintLocalLinks(filepathToLinks map[string][]string, docsPath string) (strin
 
 	for filePath, links := range filepathToLinks {
 		for _, link := range links {
-			path := filepath.Join(docsPath, filepath.Dir(filePath), link)
+			path := filepath.Join(filepath.Dir(filePath), link)
 
 			if _, err := os.Stat(path); err != nil {
 				if !found {

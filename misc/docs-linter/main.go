@@ -121,7 +121,7 @@ func execLint(cfg *cfg, ctx context.Context) (string, error) {
 	})
 
 	g.Go(func() error {
-		res, err := lintLocalLinks(filepathToLocalLink, cfg.docsPath)
+		res, err := lintLocalLinks(filepathToLocalLink)
 		if err != nil {
 			writeLock.Lock()
 			output.WriteString(res)
