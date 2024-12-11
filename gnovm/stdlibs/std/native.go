@@ -5,6 +5,7 @@ import (
 	"github.com/gnolang/gno/tm2/pkg/bech32"
 	"github.com/gnolang/gno/tm2/pkg/crypto"
 	"github.com/gnolang/gno/tm2/pkg/std"
+	"strings"
 )
 
 func AssertOriginCall(m *gno.Machine) {
@@ -134,6 +135,23 @@ func X_getRealm(m *gno.Machine, height int) (address, pkgPath string) {
 
 	// Fallback case: return OrigCaller.
 	return string(ctx.OrigCaller), ""
+}
+
+// X_getRealmAt returns a realm object from the store if it exists
+func X_getRealmAt(m *gno.Machine, pkgPath string) Realm {
+	if !strings.HasPrefix(pkgPath, "gno.land/r/") {
+		rlm := m.Store.GetPackageRealm(pkgPath)
+		if rlm == nil {
+			return Realm{}
+		}
+
+		return Realm{
+			addr:    Address(gno.DerivePkgAddr(pkgPath).Bech32()),
+			pkgPath: pkgPath,
+		}
+	}
+
+	return Realm{}
 }
 
 // currentRealm retrieves the current realm's address and pkgPath.
