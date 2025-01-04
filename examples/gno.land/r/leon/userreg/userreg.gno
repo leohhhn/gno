@@ -2,6 +2,7 @@ package userreg
 
 import (
 	"std"
+	"strings"
 
 	"gno.land/p/demo/avl"
 )
@@ -14,7 +15,8 @@ type UserData struct {
 }
 
 func (u UserData) IsDeleted() bool {
-	return ResolveName(u.username).deleted
+	// No need to resolve, any UserData this is called upon will already be resolved
+	return u.deleted
 }
 
 var (
@@ -22,21 +24,37 @@ var (
 	addressStore = avl.NewTree()
 )
 
+// todo add regex addr lookalike check
+const maxNameLength = 64
+
 // Register adds a new user to the system.
 func Register(name string, address std.Address) error {
+	// Validate inputs
+	if err := validateName(name); err != nil {
+		return err
+	}
+
+	if !address.IsValid() {
+		return ErrInvalidAddress
+	}
+
+	// Check if name is taken
 	if nameStore.Has(name) {
-		panic("name taken")
+		return ErrNameTaken
 	}
 
 	raw, ok := addressStore.Get(address.String())
 	if ok {
+		// Cannot re-register after deletion
 		if raw.(*UserData).IsDeleted() {
-			panic("cannot reregister after deletion")
+			return ErrDeletedUser
 		}
 
-		panic("use RegisterAlias")
+		// For a second name, user RegisterAlias
+		return ErrAlreadyHasName
 	}
 
+	// Create UserData
 	data := &UserData{
 		addr:     address,
 		username: name,
@@ -44,6 +62,7 @@ func Register(name string, address std.Address) error {
 		deleted:  false,
 	}
 
+	// Set corresponding stores
 	nameStore.Set(name, data)
 	addressStore.Set(address.String(), data)
 
@@ -52,17 +71,31 @@ func Register(name string, address std.Address) error {
 
 // RegisterAlias adds an alias pointing to an existing user.
 func RegisterAlias(alias string, address std.Address) error {
-	if nameStore.Has(alias) {
-		panic("name taken")
+	// Validate inputs
+	if err := validateName(alias); err != nil {
+		return err
 	}
 
+	if !address.IsValid() {
+		return ErrInvalidAddress
+	}
+
+	// Check if requested alias is already taken
+	if nameStore.Has(alias) {
+		return ErrNameTaken
+	}
+
+	// Check if user has a name before an alias
 	raw, ok := addressStore.Get(address.String())
 	if !ok {
-		panic("address not registered")
+		return ErrAliasBeforeName
 	}
 
-	oldData := raw.(*UserData)
+	if raw.(*UserData).IsDeleted() {
+		return ErrDeletedUser
+	}
 
+	// Create new Alias
 	newData := &UserData{
 		addr:     address,
 		username: alias,
@@ -70,11 +103,32 @@ func RegisterAlias(alias string, address std.Address) error {
 		deleted:  false,
 	}
 
+	oldData := raw.(*UserData)
+	// Point to new alias
 	oldData.alias = newData
 	oldData.addr = ""
 
+	// Set latest alias to stores
 	addressStore.Set(address.String(), newData)
 	nameStore.Set(alias, newData)
+
+	return nil
+}
+
+// Delete marks a user and all their aliases as deleted.
+func Delete(name string) error {
+	data := ResolveName(name)
+	if data == nil {
+		return ErrUserNotExist
+	}
+
+	if data.deleted {
+		return ErrAlreadyDeleted
+	}
+
+	data.deleted = true
+	// data.addr = "" // I don't think we should do this, might cause problems later
+	data.username = "ghost"
 
 	return nil
 }
@@ -110,36 +164,11 @@ func ResolveAddress(addr std.Address) *UserData {
 	return data
 }
 
-// Delete marks a user and all their aliases as deleted.
-func Delete(name string) error {
-	data := ResolveName(name)
-	if data == nil {
-		panic("non-existent user")
+func validateName(name string) error {
+	trimmed := strings.TrimSpace(name)
+	if trimmed == "" || len(trimmed) > maxNameLength {
+		return ErrInvalidName
 	}
-
-	data.deleted = true
-	data.username = "ghost"
 
 	return nil
 }
-
-// USER SIDE Usage example:
-//
-/// 	res := ResolveName("alice")
-//		if res == nil {
-//			// alice does not exist
-//		}
-//
-//		if res.IsDeleted() {
-//			// alice chose to be a ghost
-//		}
-//
-//		// possible user mistakes
-//		if res != nil {
-//			token.Transfer(res.address, 10000) // will fail if user has been deleted
-//		}
-//
-//		^^^	in this case maybe Resolve() should be Resolve() *UserData, deleted
-// 							mainly to make the UX stand out to the user that they might be deleted,
-// 							and what that could mean.
-// 							another solution is to not delete the address from the deleted user, but only the name
