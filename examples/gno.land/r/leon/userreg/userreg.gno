@@ -24,7 +24,6 @@ var (
 	addressStore = avl.NewTree()
 )
 
-// todo add regex addr lookalike check
 const maxNameLength = 64
 
 // Register adds a new user to the system.
@@ -127,8 +126,8 @@ func Delete(name string) error {
 	}
 
 	data.deleted = true
-	// data.addr = "" // I don't think we should do this, might cause problems later
-	data.username = "ghost"
+	// data.addr = "" // I don't think we should do this, it will likely cause user errors
+	// data.username = "ghost" // could cause issues with users named "ghost"
 
 	return nil
 }

@@ -289,7 +289,7 @@ func TestDelete(t *testing.T) {
 
 		resolved := ResolveName(alice)
 		uassert.NotEqual(t, nil, resolved)
-		uassert.Equal(t, "ghost", resolved.username)
+		uassert.Equal(t, alice, resolved.username)
 		uassert.Equal(t, aliceAddr, resolved.addr)
 		uassert.True(t, resolved.deleted)
 	})
