@@ -110,7 +110,6 @@ func TestRegisterAlias(t *testing.T) {
 		urequire.NoError(t, RegisterUser(alice, aliceAddr))
 		uassert.NoError(t, RegisterAlias("alice1", aliceAddr))
 		uassert.NoError(t, RegisterAlias("alice2", aliceAddr))
-
 	})
 
 	t.Run("name_taken", func(t *testing.T) {
@@ -191,11 +190,11 @@ func TestResolveName(t *testing.T) {
 		urequire.NoError(t, RegisterUser(alice, aliceAddr))
 		urequire.NoError(t, RegisterAlias("alice1", aliceAddr))
 
-		res, deleted := ResolveName(alice)
+		res, deleted := ResolveName("alice1")
 		urequire.NotEqual(t, nil, res)
 
 		uassert.Equal(t, aliceAddr, res.Addr)
-		uassert.Equal(t, "alice1", res.Username)
+		uassert.Equal(t, alice, res.Username)
 		uassert.False(t, deleted)
 	})
 
@@ -213,25 +212,14 @@ func TestResolveName(t *testing.T) {
 			names = append(names, alias)
 
 			urequire.NoError(t, RegisterAlias(alias, aliceAddr))
-
-			// Right after registering, it should resolve to itself
-			res, deleted := ResolveName(alias)
-			urequire.NotEqual(t, nil, res)
-
-			uassert.Equal(t, aliceAddr, res.Addr)
-			uassert.Equal(t, alias, res.Username)
-			uassert.False(t, deleted)
 		}
-
-		// Now verify that all aliases resolve to the latest one (alice4)
-		finalAlias := names[len(names)-1]
 
 		for _, alias := range names {
 			res, deleted := ResolveName(alias)
 			urequire.NotEqual(t, nil, res)
 
 			uassert.Equal(t, aliceAddr, res.Addr)
-			uassert.Equal(t, finalAlias, res.Username)
+			uassert.Equal(t, alice, res.Username)
 			uassert.False(t, deleted)
 		}
 	})
@@ -264,7 +252,7 @@ func TestResolveAddress(t *testing.T) {
 		urequire.NotEqual(t, nil, res)
 
 		uassert.Equal(t, aliceAddr, res.Addr)
-		uassert.Equal(t, "alice1", res.Username)
+		uassert.Equal(t, alice, res.Username)
 		uassert.False(t, deleted)
 	})
 
@@ -283,14 +271,6 @@ func TestResolveAddress(t *testing.T) {
 			names = append(names, alias)
 
 			urequire.NoError(t, RegisterAlias(alias, aliceAddr))
-
-			// Right after registering, it should resolve to itself
-			res, deleted := ResolveAddress(aliceAddr)
-			urequire.NotEqual(t, nil, res)
-
-			uassert.Equal(t, aliceAddr, res.Addr)
-			uassert.Equal(t, alias, res.Username)
-			uassert.False(t, deleted)
 		}
 	})
 }

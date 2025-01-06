@@ -32,7 +32,6 @@ type UserData struct {
 }
 
 func (u UserData) IsDeleted() bool {
-	// No need to resolve, any UserData this is called upon will already be resolved
 	return u.Deleted
 }
 
@@ -55,7 +54,12 @@ func RegisterUser(name string, address std.Address) error {
 	raw, ok := addressStore.Get(address.String())
 	if ok {
 		// Cannot re-register after deletion
-		if raw.(*UserData).IsDeleted() {
+		data, ok := nameStore.Get(raw.(string))
+		if !ok {
+			panic("doesnt exist")
+		}
+
+		if data.(*UserData).IsDeleted() {
 			return ErrDeletedUser
 		}
 
@@ -100,8 +104,17 @@ func RegisterAlias(alias string, address std.Address) error {
 		return ErrAliasBeforeName
 	}
 
+	data, ok := nameStore.Get(raw.(string))
+	if !ok {
+		panic("wtf")
+	}
+
+	if data.(*UserData).IsDeleted() {
+		return ErrDeletedUser
+	}
+
 	addressStore.Set(address.String(), alias)
-	nameStore.Set(alias, raw.(*UserData))
+	nameStore.Set(alias, data.(*UserData))
 
 	std.Emit(RegisterAliasEvent, "Alias", alias, "address", address.String())
 	return nil
