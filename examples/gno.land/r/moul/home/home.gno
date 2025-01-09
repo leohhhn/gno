@@ -24,7 +24,7 @@ func init() {
 	todos = append(todos, "fill this todo list...")
 	status = "Online" // Initial status set to "Online"
 	memeImgURL = "https://i.imgflip.com/7ze8dc.jpg"
-	hof.Register()
+	hof.Register("Moul's home page", "")
 }
 
 func Render(path string) string {

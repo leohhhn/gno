@@ -16,7 +16,7 @@ var (
 )
 
 func init() {
-	hof.Register()
+	hof.Register("Nathan's Home Realm", "")
 }
 
 // Add appends a string to the preview Chonk.

@@ -29,11 +29,13 @@ type (
 	}
 
 	Item struct {
-		id       seqid.ID
-		pkgpath  string
-		blockNum int64
-		upvote   *avl.Tree // std.Addr > struct{}{}
-		downvote *avl.Tree // std.Addr > struct{}{}
+		id          seqid.ID
+		pkgpath     string
+		blockNum    int64
+		title       string
+		description string
+		upvote      *avl.Tree // std.Addr > struct{}{}
+		downvote    *avl.Tree // std.Addr > struct{}{}
 	}
 )
 
@@ -49,8 +51,18 @@ func init() {
 
 // Register registers your realm to the Hall of Fame
 // Should be called from within code
-func Register() {
+// Title is required, description is optional
+// and must be under 65 chars
+func Register(title, description string) {
 	if Pausable.IsPaused() {
+		return
+	}
+
+	if len(title) < 0 || len(title) > 25 {
+		return
+	}
+
+	if len(description) > 64 {
 		return
 	}
 
@@ -69,11 +81,13 @@ func Register() {
 
 	id := exhibition.itemCounter.Next()
 	i := &Item{
-		id:       id,
-		pkgpath:  pkgpath,
-		blockNum: std.GetHeight(),
-		upvote:   avl.NewTree(),
-		downvote: avl.NewTree(),
+		id:          id,
+		pkgpath:     pkgpath,
+		blockNum:    std.GetHeight(),
+		title:       title,
+		description: description,
+		upvote:      avl.NewTree(),
+		downvote:    avl.NewTree(),
 	}
 
 	exhibition.items.Set(pkgpath, i)
@@ -85,14 +99,14 @@ func Register() {
 func Upvote(pkgpath string) {
 	rawItem, ok := exhibition.items.Get(pkgpath)
 	if !ok {
-		panic(ErrNoSuchItem.Error())
+		panic(ErrNoSuchItem)
 	}
 
 	item := rawItem.(*Item)
 	caller := std.PrevRealm().Addr().String()
 
 	if item.upvote.Has(caller) {
-		panic(ErrDoubleUpvote.Error())
+		panic(ErrDoubleUpvote)
 	}
 
 	item.upvote.Set(caller, struct{}{})
@@ -101,14 +115,14 @@ func Upvote(pkgpath string) {
 func Downvote(pkgpath string) {
 	rawItem, ok := exhibition.items.Get(pkgpath)
 	if !ok {
-		panic(ErrNoSuchItem.Error())
+		panic(ErrNoSuchItem)
 	}
 
 	item := rawItem.(*Item)
 	caller := std.PrevRealm().Addr().String()
 
 	if item.downvote.Has(caller) {
-		panic(ErrDoubleDownvote.Error())
+		panic(ErrDoubleDownvote)
 	}
 
 	item.downvote.Set(caller, struct{}{})
@@ -116,19 +130,19 @@ func Downvote(pkgpath string) {
 
 func Delete(pkgpath string) {
 	if !Ownable.CallerIsOwner() {
-		panic(ownable.ErrUnauthorized.Error())
+		panic(ownable.ErrUnauthorized)
 	}
 
 	i, ok := exhibition.items.Get(pkgpath)
 	if !ok {
-		panic(ErrNoSuchItem.Error())
+		panic(ErrNoSuchItem)
 	}
 
 	if _, removed := exhibition.itemsSorted.Remove(i.(*Item).id.String()); !removed {
-		panic(ErrNoSuchItem.Error())
+		panic(ErrNoSuchItem)
 	}
 
 	if _, removed := exhibition.items.Remove(pkgpath); !removed {
-		panic(ErrNoSuchItem.Error())
+		panic(ErrNoSuchItem)
 	}
 }

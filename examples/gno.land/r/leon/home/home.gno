@@ -34,7 +34,7 @@ TODO import r/gh
 `,
 	}
 
-	hof.Register()
+	hof.Register("Leon's Home page", "")
 	mirror.Register(std.CurrentRealm().PkgPath(), Render)
 }
 
