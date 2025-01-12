@@ -1,7 +1,8 @@
 package sending_gnot
 
 import (
-	"github.com/gnolang/gno/gnovm/stdlibs/std"
+	"std"
+
 	"gno.land/p/moul/md"
 )
 

@@ -8,6 +8,7 @@ differences between Solidity and Gno.`
 
 	out += `
 - [Sending GNOT](/r/docs/from_solidity/sending_gnot) - Learn how to programatically send the gno.land native coin, GNOT.
+- [Payable functions](/r/docs/from_solidity/payable) - Gno does not have the payable keyword. Instead...
 
 ...
 `
