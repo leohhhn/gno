@@ -93,7 +93,7 @@ func RegisterAlias(alias string, address std.Address) error {
 		return err
 	}
 
-	// Check if requested Alias is already taken
+	// Check if the requested Alias is already taken
 	if nameStore.Has(alias) {
 		return ErrNameTaken
 	}
@@ -104,17 +104,21 @@ func RegisterAlias(alias string, address std.Address) error {
 		return ErrAliasBeforeName
 	}
 
-	data, ok := nameStore.Get(raw.(string))
+	rawUserData, ok := nameStore.Get(raw.(string))
 	if !ok {
 		panic("wtf")
 	}
 
-	if data.(*UserData).IsDeleted() {
+	userData := rawUserData.(*UserData)
+
+	if userData.IsDeleted() {
 		return ErrDeletedUser
 	}
 
+	userData.Username = alias
+
 	addressStore.Set(address.String(), alias)
-	nameStore.Set(alias, data.(*UserData))
+	nameStore.Set(alias, userData)
 
 	std.Emit(RegisterAliasEvent, "Alias", alias, "address", address.String())
 	return nil
