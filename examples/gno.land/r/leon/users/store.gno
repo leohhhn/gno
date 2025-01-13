@@ -37,12 +37,13 @@ func (u UserData) IsDeleted() bool {
 
 // RegisterUser adds a new user to the system.
 func RegisterUser(name string, address std.Address) error {
-	// Validate inputs
-	if err := validateInputs(name, address); err != nil {
+	// Validate caller
+	if err := validateCall(); err != nil {
 		return err
 	}
 
-	if err := validateCall(); err != nil {
+	// Validate inputs
+	if err := validateInputs(name, address); err != nil {
 		return err
 	}
 
@@ -84,12 +85,13 @@ func RegisterUser(name string, address std.Address) error {
 
 // RegisterAlias adds an Alias pointing to an existing user.
 func RegisterAlias(alias string, address std.Address) error {
-	// Validate inputs
-	if err := validateInputs(alias, address); err != nil {
+	// Validate caller
+	if err := validateCall(); err != nil {
 		return err
 	}
 
-	if err := validateCall(); err != nil {
+	// Validate inputs
+	if err := validateInputs(alias, address); err != nil {
 		return err
 	}
 
@@ -140,8 +142,6 @@ func Delete(addr std.Address) error {
 	}
 
 	data.Deleted = true
-	// data.Addr = "" // I don't think we should do this, it will likely cause user errors
-	// data.Username = "ghost" // could cause issues with users named "ghost"
 
 	std.Emit(DeleteUserEvent, "address", data.Addr.String())
 	return nil
