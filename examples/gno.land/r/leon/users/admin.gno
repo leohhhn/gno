@@ -5,24 +5,26 @@ import (
 
 	"gno.land/p/demo/ownable"
 	"gno.land/p/demo/pausable"
+	"gno.land/p/moul/addrset"
 )
 
 const (
-	adminAddr            = "g1u7y667z64x2h7vc6fmpcprgey4ck233jaww9zq" // @moul
-	WhitelistAddEvent    = "WhitelistAdd"
-	WhitelistDeleteEvent = "WhitelistDelete"
-
-	gnolandUsers = "gno.land/r/gnoland/users" // preregistered with store write perms
+	adminAddr    = "g1u7y667z64x2h7vc6fmpcprgey4ck233jaww9zq" // @moul
+	gnolandUsers = "gno.land/r/gnoland/users"                 // preregistered with store write perms
 )
 
 var (
+	callerWhitelist = addrset.Set{}
+
+	// Safe objects
 	Ownable  = ownable.NewWithAddress(adminAddr) // Until a DAO is formed to manage this contract
 	Pausable = pausable.NewFromOwnable(Ownable)
 )
 
 func init() {
 	// Set initial whitelisted caller
-	callerWhitelist.Set(std.DerivePkgAddr(gnolandUsers).String(), struct{}{})
+	callerWhitelist.Add(std.DerivePkgAddr(gnolandUsers))
+
 }
 
 // AddToWhitelist adds a new address to the caller whitelist
@@ -35,13 +37,12 @@ func AddToWhitelist(addr std.Address) error {
 		return ErrInvalidAddress
 	}
 
-	if callerWhitelist.Has(addr.String()) {
+	if callerWhitelist.Has(addr) {
 		return ErrAlreadyWhitelisted
 	}
 
-	callerWhitelist.Set(addr.String(), struct{}{})
+	callerWhitelist.Add(addr)
 
-	std.Emit(WhitelistAddEvent, "address", addr.String())
 	return nil
 }
 
@@ -51,21 +52,18 @@ func DelFromWhitelist(addr std.Address) error {
 		return ownable.ErrUnauthorized
 	}
 
-	if !callerWhitelist.Has(addr.String()) {
+	if !callerWhitelist.Has(addr) {
 		return ErrNotWhitelisted
 	}
 
-	_, removed := callerWhitelist.Remove(addr.String())
-	if !removed {
-		panic("failed to remove from whitelist") // should never happen
+	if ok := callerWhitelist.Remove(addr); !ok {
+		panic("failed to remove address from whitelist")
 	}
 
-	std.Emit(WhitelistDeleteEvent, "address", addr.String())
 	return nil
 }
 
-// IsOnWhitelist checks if the given address has
-// permission to write to the user store
+// IsOnWhitelist checks if the given address has permission to write to the user store
 func IsOnWhitelist(addr std.Address) bool {
-	return callerWhitelist.Has(addr.String())
+	return callerWhitelist.Has(addr)
 }
