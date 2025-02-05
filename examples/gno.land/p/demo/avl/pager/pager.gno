@@ -81,10 +81,20 @@ func (p *Pager) GetPageWithSize(pageNumber, pageSize int) *Page {
 		return page
 	}
 
-	startIndex := (pageNumber - 1) * pageSize
-	endIndex := startIndex + pageSize
-	if endIndex > totalItems {
-		endIndex = totalItems
+	var startIndex, endIndex int
+	if p.Reversed {
+		// Instead of calculating pages from the start, we count from the end
+		startIndex = totalItems - (pageNumber * pageSize)
+		if startIndex < 0 {
+			startIndex = 0
+		}
+		endIndex = startIndex + pageSize
+	} else {
+		startIndex = (pageNumber - 1) * pageSize
+		endIndex = startIndex + pageSize
+		if endIndex > totalItems {
+			endIndex = totalItems
+		}
 	}
 
 	items := []Item{}

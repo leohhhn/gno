@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	pageSize = 5
+	pageSize = 2
 )
 
 func Render(path string) string {
