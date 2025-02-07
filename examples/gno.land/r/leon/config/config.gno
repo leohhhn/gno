@@ -11,8 +11,10 @@ import (
 	p "gno.land/p/demo/avl/pager"
 	"gno.land/p/demo/ownable"
 	"gno.land/p/demo/ufmt"
+	"gno.land/p/leon/ocownable"
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/realmpath"
+	"gno.land/p/moul/txlink"
 )
 
 var (
@@ -22,7 +24,7 @@ var (
 	absPath = strings.TrimPrefix(std.CurrentRealm().PkgPath(), std.GetChainDomain())
 
 	// SafeObjects
-	OwnableMain   = ownable.NewWithAddress("g125em6arxsnj49vx35f0n0z34putv5ty3376fg5")
+	Ownable       = ocownable.NewWithAddress("g125em6arxsnj49vx35f0n0z34putv5ty3376fg5") // can be re-exposed
 	OwnableBackup = ownable.NewWithAddress("g1lavlav7zwsjqlzzl3qdl3nl242qtf638vnhdjh")
 
 	ErrUnauthorized = errors.New("leon's config: unauthorized")
@@ -38,10 +40,25 @@ func AddConfig(name, lines string) {
 		panic(ErrUnauthorized)
 	}
 
-	configs.Set(name, Config{
+	configs.Set(name, &Config{
 		lines:   lines,
 		updated: time.Now(),
 	}) // no overwrite check
+}
+
+func EditConfig(name, lines string) {
+	if !IsAuthorized(std.PrevRealm().Addr()) {
+		panic(ErrUnauthorized)
+	}
+
+	raw, ok := configs.Get(name)
+	if !ok {
+		panic("couldn't update config")
+	}
+
+	c := raw.(*Config)
+	c.lines = lines
+	c.updated = time.Now()
 }
 
 func RemoveConfig(name string) {
@@ -63,7 +80,7 @@ func UpdateBanner(newBanner string) {
 }
 
 func IsAuthorized(addr std.Address) bool {
-	return addr == OwnableMain.Owner() || addr == OwnableBackup.Owner()
+	return addr == Ownable.Owner() || addr == OwnableBackup.Owner()
 }
 
 func Banner() string {
@@ -72,33 +89,50 @@ func Banner() string {
 
 func Render(path string) (out string) {
 	req := realmpath.Parse(path)
-	if req.Path == "" {
-		out += md.H1("Leon's config package")
 
-		out += ufmt.Sprintf("Leon's main address: %s\n\n", OwnableMain.Owner().String())
-		out += ufmt.Sprintf("Leon's backup address: %s\n\n", OwnableBackup.Owner().String())
+	switch req.Path {
+	case "":
+		return renderHome(req.Path, false)
+	case "admin":
+		return renderHome(req.Path, true)
+	default:
+		return renderConfPage(req.Path)
+	}
+}
 
-		out += md.H2("Leon's configs")
+func renderHome(path string, admin bool) string {
+	out := md.H1("Leon's config package")
 
-		if configs.Size() == 0 {
-			out += "No configs yet :c\n\n"
-		}
+	out += ufmt.Sprintf("Leon's main address: %s\n\n", Ownable.Owner().String())
+	out += ufmt.Sprintf("Leon's backup address: %s\n\n", OwnableBackup.Owner().String())
 
-		page := pager.MustGetPageByPath(path)
-		for _, item := range page.Items {
+	out += md.H2("Leon's configs")
+
+	if configs.Size() == 0 {
+		out += "No configs yet :c\n\n"
+	}
+
+	page := pager.MustGetPageByPath(path)
+	for _, item := range page.Items {
+		if admin {
+			out += ufmt.Sprintf("- [%s](%s:%s) - %s - %s\n\n", item.Key, absPath, item.Key,
+				txlink.Call("EditConfig"),
+				txlink.Call("RemoveConfig"),
+			)
+		} else {
 			out += ufmt.Sprintf("- [%s](%s:%s)\n\n", item.Key, absPath, item.Key)
 		}
+	}
 
+	if page.TotalPages > 0 {
 		out += page.Picker()
 		out += "\n\n"
 		out += "Page " + strconv.Itoa(page.PageNumber) + " of " + strconv.Itoa(page.TotalPages) + "\n\n"
-
-		out += Banner()
-
-		return out
 	}
 
-	return renderConfPage(req.Path)
+	out += Banner()
+
+	return out
 }
 
 func renderConfPage(confName string) (out string) {
