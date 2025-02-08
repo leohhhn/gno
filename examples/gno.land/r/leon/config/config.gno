@@ -116,7 +116,7 @@ func renderHome(path string, admin bool) string {
 	page := pager.MustGetPageByPath(path)
 	for _, item := range page.Items {
 		if admin {
-			out += ufmt.Sprintf("- [%s](%s:%s) - [Edit](%s) - [Delete](%s)\n\n", item.Key, absPath, item.Key,
+			out += ufmt.Sprintf("- [%s](%s:%s) - [Edit](%s) - [Delete](%s)\n\n", item.Value.(*Config).name, absPath, item.Key,
 				txlink.Call("EditConfig", "name", item.Key),
 				txlink.Call("RemoveConfig", "name", item.Key),
 			)
