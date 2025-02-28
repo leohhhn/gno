@@ -1,15 +1,12 @@
 package docs
 
-func frontMatter() string {
-	return `---
-Title: Welcome to the Gno examples documentation index 
-Description: Welcome to the Gno examples documentation index. Explore various examples to learn more about Gno functionality and usage.
----`
-}
+import (
+	fm "gno.land/p/leon/fm/v1"
+)
 
 func Render(_ string) string {
 	content := ""
-	content += frontMatter()
+	content += fm.Write("Welcome to the Gno examples documentation index", "Welcome to the Gno examples documentation index. Explore various examples to learn more about Gno functionality and usage.")
 	content += `
 # Gno Examples Documentation
 
