@@ -1,11 +1,11 @@
 # Realms
 
 In gno.land, realms are entities that are addressable and identifiable by a
-[Gno address](../reference/std.md#address). These can be user
+[Gno address](./gno-stdlibs.md#address). These can be user
 realms (EOAs), as well as smart contract realms. Realms have several
 properties:
-- They can own, receive & send [Coins](./stdlibs/coin.md) through the
-  [Banker](./stdlibs/banker.md) module
+- They can own, receive & send [Coins](./gno-stdlibs.md#coin) through the
+  [Banker](./gno-stdlibs.md#banker) module
 - They can be part of a transaction call stack, as a caller or a callee
 - They can be with or without code - smart contracts, or EOAs
 
@@ -20,30 +20,30 @@ type Realm struct {
 The full Realm API can be found under the
 [reference section](../reference/std.md#realm).
 
-## Smart Contract Realms
+### Smart Contract Realms
 
 Often simply called `realms`, Gno smart contracts contain Gno code and exist
-on-chain at a specific [package path](pkg-paths.md). A package path is the 
+on-chain at a specific [package path](gno-packages.md). A package path is the 
 defining identifier of a realm, while its address is derived from it.
 
-As opposed to [pure packages](./packages.md), realms are stateful, meaning they
+As opposed to [pure packages](./gno-packages.md#pure-packages-p), realms are stateful, meaning they
 keep their state between transaction calls. In practice, global variables used in realms 
 are automatically persisted after a transaction has been executed. Thanks to this,
 Gno developers do not need to bother with the intricacies of state management 
 and persistence, like they do with other languages.
 
-## Externally Owned Accounts (EOAs)
+### Externally Owned Accounts (EOAs)
 
 EOAs, or simply `user realms`, are Gno addresses generated from a BIP39 mnemonic
 phrase in a key management application, such as
-[gnokey](../dev-guides/gnokey/managing-keypairs.md), and web wallets, such as
-[Adena](https://adena.app).
+[gnokey](../users/interact-with-gnokey.md), and web wallets, such as
+[Adena](../users/third-party-wallets.md).
 
 Currently, EOAs are the only realms that can initiate a transaction. They can do
 this by calling any of the possible messages in gno.land, which can be 
-found [here](../dev-guides/gnokey/making-transactions.md#overview).
+found [here](../users/interact-with-gnokey.md#making-transactions).
 
-## Working with realms
+### Working with realms
 
 In Gno, each transaction contains a realm call stack. Every item in the stack and
 its properties can be accessed via different functions defined in the `std` 
@@ -58,7 +58,7 @@ Let's look at the return values of these functions in two distinct situations:
 1. EOA calling a realm
 2. EOA calling a sequence of realms
 
-### 1. EOA calling a realm
+#### 1. EOA calling a realm
 
 Take these two actors in the call stack:
 ```
@@ -90,11 +90,10 @@ std.PrevRealm() => Realm {
 }
 std.CurrentRealm() => Realm {
     addr:    `g17m4ga9t9dxn8uf06p3cahdavzfexe33ecg8v2s`
-    pkgPath: `gno.land/r/demo/users`
-}
+    pkgPath: `gno.land/r/demo/users`}
 ```
 
-### 2. EOA calling a sequence of realms
+#### 2. EOA calling a sequence of realms
 
 Take these three actors in the call stack:
 ```
@@ -148,4 +147,7 @@ std.CurrentRealm() => Realm {
 }
 ```
 
-Check out the realm reference page [here](../reference/std.md#realm).
+For more information about realms and how they fit into the gno.land ecosystem, see the [Package Path Structure](./gno-packages.md#package-path-structure) documentation.
+
+To learn how to develop your own realms, check out the [Anatomy of a Gno Package](../builders/anatomy-of-a-gno-package.md) and [Example Minisocial dApp](../builders/example-minisocial-dapp.md) guides.
+
