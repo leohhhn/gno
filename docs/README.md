@@ -1,69 +1,50 @@
-  # gno.land
+# gno.land
 
-Welcome to the Official Documentation of gno.land. Get started with Gno below.
+Welcome to the official documentation of gno.land.
 
-## Getting Started
+gno.land is a smart contract platform built on a novel interpretation of Go
+(Golang) for blockchain, created to enable powerful, modular, and secure
+decentralized applications with a minimalist approach and excellent developer
+experience.
 
-Get started with gno.land and Gno development. These tutorials are meant to be read in sequence.
+## Use gno.land
 
-- [2. Exploring gno.land](getting-started/exploring-gnoland.md) - Learn about how gno.land stores smart contracts and how you can browse them via gnoweb.
-- [3. Writing Gno code](getting-started/writing-gno.md) - Get a grasp on the basics of Gno syntax.
-- [4. Developing locally](getting-started/developing-locally/) - Learn how to develop Gno locally.
-  - [4.1 Setup & installation](getting-started/developing-locally/installation.md)
-  - [4.2 Running & testing Gno code](getting-started/developing-locally/running-testing-gno.md)
-  - [4.3 Creating a key pair with gnokey](getting-started/developing-locally/creating-a-keypair.md)
-  - [4.4 Running a local development node](getting-started/developing-locally/local-dev-node.md)
-  - [4.5 Creating a mini social application](getting-started/developing-locally/minisocial.md)
-- [5. Deploying Gno code](getting-started/deploying.md) - Learn how to deploy code to a gno.land network.
-- [7. Becoming a Gnome Contributor](getting-started/becoming-a-gnome.md) - Find out what makes a great gno.land contributor.
+Start exploring and using gno.land. Setup essential tools, interact with the
+chain and its dApps.
 
-## Developer Guides
+- [Discover gno.land](users/discover-gnoland.md) - Discover the gno.land ecosystem and explore available tools for interacting with the blockchain.
+- [Using the `gnoweb` interface](users/explore-with-gnoweb.md) - Learn how to use `gnoweb` to browse realm code, view rendered content, and explore the gno.land ecosystem.
+- [Installing and using the `gnokey` wallet](users/interact-with-gnokey.md) - Learn how to manage keys and interact with gno.land networks using the `gnokey` command-line tool.
+- [Example `boards`](users/example-boards.md) - Follow a complete workflow for using and interacting with community board realms.
+- [Third-party wallets](users/third-party-wallets.md) - Discover compatible third-party wallets and how to use them with gno.land networks.
+- [Become a power user](users/power-users.md) - Take your gno.land journey further with social networks, community resources, and development tools.
 
-Learn how to work with Gno tools, use Gno-specific features, connect to Gno apps with clients, and more.
+## Build on gno.land
 
-- [gnokey](dev-guides/gnokey/) - Learn how to use gnokey binary, the gno.land CLI keychain and client.
-  - [Overview](dev-guides/gnokey/overview.md)
-  - [Making transactions](dev-guides/gnokey/making-transactions.md)
-  - [Querying a gno.land network](dev-guides/gnokey/querying-a-network.md)
-  - [Making an airgapped transaction](dev-guides/gnokey/full-security-tx.md)
-- [Connecting a Go app to gno.land](dev-guides/connecting-from-go.md) - Learn how to interact with the gno.land blockchain from a Go program.
+Get started with Gno development. Learn how to work with Gno tools, use
+Gno-specific features, connect to Gno apps with clients, and more.
 
-## Concepts
+- [What is Gno](builders/what-is-gnolang.md) - An introduction to Gno, a blockchain implementation of Go created by Cosmos co-founder Jae Kwon, highlighting its similarities to Go, security features, and advantages over other smart contract languages.
+- [Writing Gno code](builders/anatomy-of-a-gno-package.md) - Get a grasp on the basics of Gno syntax by building a simple Counter application and understanding the core language features.
+- [Installing `gno` and developing locally with `gnodev`](builders/local-dev-with-gnodev.md) - Setup a local development environment with a built-in node, hot-reload features, and testing capabilities.
+- [Example `minisocial` dApp](builders/example-minisocial-dapp.md) - Build a complete social media application while learning the full local development workflow for Gno packages.
+- [Deploying Gno packages](builders/deploy-packages.md) - Learn how to deploy your code to gno.land networks using `gnokey` and understand gas requirements.
+- [Connecting clients](builders/connect-clients-and-apps.md) - Discover how to connect external applications to gno.land networks using both Go and JavaScript clients.
+- [Become a Gnome](builders/become-a-gnome.md) - Learn what makes a great gno.land contributor and how to showcase your work in the ecosystem.
+
+## Resources
 
 Learn about core concepts found in gno.land & Gno.
 
-- [Realms](concepts/realms.md) - Learn about what realms are and how to work with them.
-- [Pure Packages](concepts/packages.md) - Learn about Pure packages and how to use them.
-- [Package Paths](concepts/pkg-paths.md) - Learn how gno.land stores code on-chain, and what namespaces are.
-- [gno.land testnets](concepts/testnets.md) - Discover different gno.land testnets and their purposes.
-- [Portal Loop](concepts/portal-loop.md) - Understand how the unique, nightly-build devnet, Portal Loop, works.
-- [Standard Libraries](concepts/stdlibs/) - An overview of the standard libraries found in the Gno language.
-  - [Overview](concepts/stdlibs/overview.md)
-  - [Banker](concepts/stdlibs/banker.md)
-  - [Coin](concepts/stdlibs/coin.md)
-  - [Gno events](concepts/stdlibs/events.md)
-
-## Misc
-
-- [Introduction to Blockchain](misc/intro-to-blockchain.md) - An overview of the important foundational concepts for blockchains and for gno.land.
-- [Effective Gno](misc/effective-gno.md) - Learn how to write Gno following best practices, inspired by Effective Go.
-- [Glossary of Gno Terms](misc/glossary.md) - List of common terms found in the gno.land ecosystem.
+- [Awesome Gno](resources/awesome-gno.md) - Curated list of Gno freshness.
+- [Effective Gno](resources/effective-gno.md) - Learn how to write Gno following best practices, including counter-intuitive good practices specific to blockchain
+- [Packages](resources/gno-packages.md) - Learn about realms, pure packages, smart contracts, dApps and how they're organized in the gno.land ecosystem.
+- [Networks](resources/gnoland-networks.md) - Discover different gno.land networks (testnets, devnets) and their purposes, including network configurations.
+- [Users and Teams](resources/users-and-teams.md) - Understand user registration, namespace ownership, and team collaboration in the gno.land ecosystem.
+- [Gas Fees](resources/gas-fees.md) - Learn about gas pricing, estimation, and optimization strategies in gno.land.
+- [Standard libraries](resources/gno-stdlibs.md) - An overview of the standard libraries found in the Gno language and how they enhance blockchain functionality.
+- [Glossary of Gno terms](resources/glossary.md) - List of common terms found in the gno.land ecosystem, from technical concepts to tools and components.
+- [Testing Gno](resources/gno-testing.md) - Learn how to run and test Gno code locally using the built-in testing framework.
+- [Go - Gno compatibility](resources/go-gno-compatibility.md) - A detailed compatibility list between Go and Gno features, including supported keywords, types, and standard libraries.
 - [Gno Examples](https://github.com/gnolang/gno/tree/master/examples) - A large library of existing pure packages and realms to use and learn from.
-- [Gno Studio Connect](https://gno.studio/connect) - Interact with any gno.land app with a web wallet.
 - [Gno Workshops](https://github.com/gnolang/workshops) - Previous workshops and presentations by the gno.land team and the community.
-- [awesome-gno](https://github.com/gnoverse/awesome-gno) - A list of awesome Gno projects you can contribute to.
-- [gnops.io](https://gnops.io) - A dedicated hub for gno.land DevOps resources.
-
-## Reference
-
-Find references for package APIs, RPC endpoints, network configurations, and more.
-
-- [Package std](reference/std.md) - Reference documentation for the Gno std package.
-- [Go - Gno Compatibility](reference/go-gno-compatibility.md) - A compatibility list between Go and Gno features.
-- [Network Configuration](reference/network-config.md) - gno.land network configurations.
-- [Clients & Tools](reference/clients-tools/) - Clients and tools to support your Gno development process.
-  - [gnoclient](https://gnolang.github.io/gno/github.com/gnolang/gno/gno.land/pkg/gnoclient.html)
-  - [tx-indexer](https://github.com/gnolang/tx-indexer)
-  - [tx-archive](https://github.com/gnolang/tx-archive)
-  - [gno-js-client](https://github.com/gnolang/gno-js-client)
-  - [tm2-js-client](https://github.com/gnolang/tm2-js-client)
