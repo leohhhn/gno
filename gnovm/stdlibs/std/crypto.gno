@@ -11,6 +11,7 @@ type Address string // NOTE: bech32
 // bech32AddrPrefix defines the Bech32 prefix of an address
 const bech32AddrPrefix = "g"
 
+// String returns the underlying string from the address
 func (a Address) String() string {
 	return string(a)
 }
