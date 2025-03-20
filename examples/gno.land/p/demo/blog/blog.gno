@@ -46,13 +46,13 @@ func (b Blog) RenderHome(res *mux.ResponseWriter, req *mux.Request) {
 		return
 	}
 
-	res.Write("<div class='columns-3'>")
+	res.Write("<gno-columns>")
 	b.PostsPublished.ReverseIterate("", "", func(key string, value any) bool {
 		post := value.(*Post)
 		res.Write(post.RenderListItem())
 		return false
 	})
-	res.Write("</div>")
+	res.Write("</gno-columns>")
 
 	// FIXME: tag list/cloud.
 }
@@ -295,15 +295,13 @@ func (p *Post) RenderListItem() string {
 	if p == nil {
 		return "error: no such post\n"
 	}
-	output := "<div>\n\n"
-	output += ufmt.Sprintf("### [%s](%s)\n", p.Title, p.URL())
+	output := ufmt.Sprintf("### %s\n\n", p.Title)
 	// output += ufmt.Sprintf("**[Learn More](%s)**\n\n", p.URL())
 
 	output += " " + p.CreatedAt.Format("02 Jan 2006")
 	// output += p.Summary() + "\n\n"
 	// output += p.RenderTagList() + "\n\n"
-	output += "\n"
-	output += "</div>"
+	output += "\n\n"
 	return output
 }
 
