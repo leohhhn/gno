@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- `gnokey` & `gnodev` set up. See [Installation](installation.md).
+- `gnokey` & `gnodev` set up. See [Installation](./installation.md).
 
 ## Overview
 
