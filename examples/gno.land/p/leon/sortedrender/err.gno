@@ -5,6 +5,7 @@ import (
 
 	"gno.land/p/demo/avl"
 	"gno.land/p/demo/avl/pager"
+	"gno.land/p/demo/avl/rotree"
 )
 
 type TreeStore struct { // XXX its a forest
@@ -42,14 +43,17 @@ func (t TreeStore) Render(path string) string {
 		return "must provide only 1 sort key"
 	}
 
-	tree, ok := t.tree.Get(sortKey[0])
+	dataTree, ok := t.tree.Get(sortKey)
 	if !ok {
 		panic("tree matching key not found")
 	}
 
-	page := pager.NewPager(tree, t.pageSize, true).MustGetPageByPath(path)
+	// gets the tree
+	page := pager.NewPager(rotree.Wrap(dataTree), t.pageSize, true).MustGetPageByPath(path)
 
-	for _, item := range page {
+	for _, item := range page.Items {
+		out += item.Key
+		out += item.Key
 
 	}
 
