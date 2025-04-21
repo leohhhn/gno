@@ -48,13 +48,12 @@ func (t TreeStore) Render(path string) string {
 		panic("tree matching key not found")
 	}
 
+	tree := rotree.Wrap(dataTree, nil)
 	// gets the tree
-	page := pager.NewPager(rotree.Wrap(dataTree), t.pageSize, true).MustGetPageByPath(path)
+	page := pager.NewPager(tree, t.pageSize, true).MustGetPageByPath(path)
 
 	for _, item := range page.Items {
 		out += item.Key
-		out += item.Key
-
 	}
 
 	return out
