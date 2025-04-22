@@ -4,7 +4,6 @@ import (
 	"net/url"
 	"strings"
 
-	"gno.land/p/demo/avl"
 	"gno.land/p/demo/avl/pager"
 	"gno.land/p/demo/fqname"
 	"gno.land/p/demo/ufmt"
@@ -14,7 +13,10 @@ import (
 	"gno.land/r/sys/users"
 )
 
-const colsPerRow = 3
+const (
+	colsPerRow = 3
+	pageSize   = colsPerRow * 3
+)
 
 func Render(path string) string {
 	out := md.H1("The Hall of Realms\n\n")
@@ -38,12 +40,9 @@ func Render(path string) string {
 }
 
 func (e Exhibition) Render(path string, dashboard bool) string {
-	tree := getTreeByPath(&e, path)
+	p := getPagerByPath(&e, path)
 
-	u, _ := url.Parse(path)
-	reversed := u.Query().Get("sort") != "oldest"
-
-	page := pager.NewPager(tree, colsPerRow*3, reversed).MustGetPageByPath(path)
+	page := p.MustGetPageByPath(path)
 	out := ufmt.Sprintf("%s\n\n", e.description)
 
 	if e.items.Size() == 0 {
@@ -134,19 +133,19 @@ func RenderExhibWidget(itemsToRender int) string {
 	return out
 }
 
-func getTreeByPath(e *Exhibition, path string) *avl.Tree {
+func getPagerByPath(e *Exhibition, path string) *pager.Pager {
 	u, _ := url.Parse(path)
 	switch u.Query().Get("sort") {
 	case "upvotes":
-		return e.itemsSortedByUpvotes
+		return pager.NewPager(e.itemsSortedByUpvotes, pageSize, true)
 	case "downvotes":
-		return e.itemsSortedByDownvotes
+		return pager.NewPager(e.itemsSortedByDownvotes, pageSize, true)
 	case "creation":
-		return e.itemsSortedByCreation
+		return pager.NewPager(e.itemsSortedByCreation, pageSize, false)
 	case "oldest":
-		return e.itemsSortedByCreation
+		return pager.NewPager(e.itemsSortedByCreation, pageSize, false)
 	default:
-		return e.itemsSortedByCreation
+		return pager.NewPager(e.itemsSortedByCreation, pageSize, false)
 	}
 }
 

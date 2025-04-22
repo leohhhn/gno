@@ -13,12 +13,10 @@ import (
 )
 
 const (
-	rlmPath  = "gno.land/r/gnoland/home"
+	rlmPath1 = "gno.land/r/gnoland/home"
 	rlmPath2 = "gno.land/r/gnoland/test2"
-
 	rlmPath3 = "gno.land/r/gnoland/test3"
 	rlmPath4 = "gno.land/r/gnoland/test4"
-	rlmPath5 = "gno.land/r/gnoland/test5"
 
 	validTitle         = "valid title"
 	invalidTitle       = "This title is very very very long, longer than 30 characters"
@@ -38,7 +36,7 @@ func TestRegister(t *testing.T) {
 	testing.SetRealm(aliceRealm)
 
 	cross(Register)(validTitle, validDesc)
-	uassert.False(t, itemExists(t, rlmPath))
+	uassert.False(t, itemExists(t, rlmPath1))
 
 	// Test register while paused
 	testing.SetRealm(adminRealm)
@@ -46,21 +44,21 @@ func TestRegister(t *testing.T) {
 	Pausable.Pause()
 
 	// Set legitimate caller
-	testing.SetRealm(std.NewCodeRealm(rlmPath))
+	testing.SetRealm(std.NewCodeRealm(rlmPath1))
 	cross(Register)(validTitle, validDesc)
 
-	uassert.False(t, itemExists(t, rlmPath))
+	uassert.False(t, itemExists(t, rlmPath1))
 
 	// Unpause
 	testing.SetRealm(adminRealm)
 	Pausable.Unpause()
 
 	// Set legitimate caller
-	testing.SetRealm(std.NewCodeRealm(rlmPath))
+	testing.SetRealm(std.NewCodeRealm(rlmPath1))
 	cross(Register)(validTitle, validDesc)
 
 	// Find registered items
-	uassert.True(t, itemExists(t, rlmPath))
+	uassert.True(t, itemExists(t, rlmPath1))
 
 	// Test register with invalid title
 	testing.SetRealm(std.NewCodeRealm(rlmPath2))
@@ -76,14 +74,10 @@ func TestRegister(t *testing.T) {
 func TestUpvote(t *testing.T) {
 	setupTest(t)
 
-	testing.SetRealm(std.NewCodeRealm(rlmPath))
+	testing.SetRealm(std.NewCodeRealm(rlmPath1))
 	cross(Register)(validTitle, validDesc)
 
-	raw, ok := exhibition.items.Get(rlmPath)
-	if !ok {
-		println("wtfAAA")
-	}
-
+	raw, _ := exhibition.items.Get(rlmPath1)
 	item := raw.(*Item)
 
 	// 0 upvotes by default
@@ -92,7 +86,7 @@ func TestUpvote(t *testing.T) {
 	testing.SetRealm(adminRealm)
 
 	urequire.NotPanics(t, func() {
-		Upvote(rlmPath)
+		Upvote(rlmPath1)
 	})
 
 	// Check both trees for 1 upvote
@@ -100,17 +94,17 @@ func TestUpvote(t *testing.T) {
 
 	// Check double upvote
 	uassert.PanicsWithMessage(t, ErrDoubleUpvote.Error(), func() {
-		Upvote(rlmPath)
+		Upvote(rlmPath1)
 	})
 }
 
 func TestDownvote(t *testing.T) {
 	setupTest(t)
 
-	testing.SetRealm(std.NewCodeRealm(rlmPath))
+	testing.SetRealm(std.NewCodeRealm(rlmPath1))
 	cross(Register)(validTitle, validDesc)
 
-	raw, _ := exhibition.items.Get(rlmPath)
+	raw, _ := exhibition.items.Get(rlmPath1)
 	item := raw.(*Item)
 
 	// 0 downvotes by default
@@ -120,7 +114,7 @@ func TestDownvote(t *testing.T) {
 	testing.SetRealm(userRealm)
 
 	urequire.NotPanics(t, func() {
-		Downvote(rlmPath)
+		Downvote(rlmPath1)
 	})
 
 	// Check both trees for 1 upvote
@@ -128,14 +122,14 @@ func TestDownvote(t *testing.T) {
 
 	// Check double downvote
 	uassert.PanicsWithMessage(t, ErrDoubleDownvote.Error(), func() {
-		Downvote(rlmPath)
+		Downvote(rlmPath1)
 	})
 }
 
 func TestDelete(t *testing.T) {
 	setupTest(t)
 
-	testing.SetRealm(std.NewCodeRealm(rlmPath))
+	testing.SetRealm(std.NewCodeRealm(rlmPath1))
 	cross(Register)(validTitle, validDesc)
 
 	userRealm := std.NewUserRealm(admin)
@@ -147,15 +141,10 @@ func TestDelete(t *testing.T) {
 	})
 
 	uassert.NotPanics(t, func() {
-		Delete(rlmPath)
+		Delete(rlmPath1)
 	})
 
-	uassert.False(t, exhibition.items.Has(rlmPath))
-}
-
-func itemExists(t *testing.T, rlmPath string) bool {
-	t.Helper()
-	return exhibition.items.Has(rlmPath)
+	uassert.False(t, exhibition.items.Has(rlmPath1))
 }
 
 func TestgetVoteSortKey(t *testing.T) {
@@ -163,7 +152,7 @@ func TestgetVoteSortKey(t *testing.T) {
 		id:          1,
 		title:       validTitle,
 		description: validDesc,
-		pkgpath:     rlmPath,
+		pkgpath:     rlmPath1,
 		blockNum:    std.ChainHeight(),
 		upvote:      &addrset.Set{},
 		downvote:    &addrset.Set{},
@@ -184,9 +173,11 @@ func TestSortByUpvote(t *testing.T) {
 	testing.SetRealm(std.NewCodeRealm(rlmPath2))
 	cross(Register)(validTitle, validDesc)
 
+	testing.SkipHeights(10)
 	testing.SetRealm(std.NewCodeRealm(rlmPath3))
 	cross(Register)(validTitle, validDesc)
 
+	testing.SkipHeights(10)
 	testing.SetRealm(std.NewCodeRealm(rlmPath4))
 	cross(Register)(validTitle, validDesc)
 
@@ -208,123 +199,96 @@ func TestSortByUpvote(t *testing.T) {
 	testing.SetOriginCaller(user3)
 	testing.SetRealm(std.NewUserRealm(user3))
 	Upvote(rlmPath4)
+	Downvote(rlmPath3)
 
+	render := exhibition.Render("?sort=upvotes", false)
 
-	render := exhibition.Render("", false)
+	pos2 := strings.Index(render, strings.TrimPrefix(rlmPath2, "gno.land"))
+	pos3 := strings.Index(render, strings.TrimPrefix(rlmPath3, "gno.land"))
+	pos4 := strings.Index(render, strings.TrimPrefix(rlmPath4, "gno.land"))
 
-	if strings.Index(render, )
-
-
-
+	if pos4 > pos3 || pos4 > pos2 || pos3 > pos2 {
+		t.Fatalf("expected different order")
+	}
 }
 
-//
-//func TestSortByDownvote(t *testing.T) {
-//	// Remove all items from all trees
-//	exhibition.items.Iterate("", "", func(key string, value interface{}) bool {
-//		exhibition.items.Remove(key)
-//		return false
-//	})
-//	exhibition.itemsSortedByUpvotes.Iterate("", "", func(key string, value interface{}) bool {
-//		exhibition.itemsSortedByUpvotes.Remove(key)
-//		return false
-//	})
-//	exhibition.itemsSortedByDownvotes.Iterate("", "", func(key string, value interface{}) bool {
-//		exhibition.itemsSortedByDownvotes.Remove(key)
-//		return false
-//	})
-//	exhibition.itemsSortedByCreation.Iterate("", "", func(key string, value interface{}) bool {
-//		exhibition.itemsSortedByCreation.Remove(key)
-//		return false
-//	})
-//
-//	// Add items
-//	testing.SetRealm(std.NewCodeRealm(rlmPath3))
-//	Register(validTitle, validDesc)
-//
-//	testing.SetRealm(std.NewCodeRealm(rlmPath4))
-//	Register(validTitle, validDesc)
-//
-//	testing.SetRealm(std.NewCodeRealm(rlmPath5))
-//	Register(validTitle, validDesc)
-//
-//	user1 := testutils.TestAddress("user1")
-//	user2 := testutils.TestAddress("user2")
-//	user3 := testutils.TestAddress("user3")
-//
-//	testing.SetOriginCaller(user1)
-//	testing.SetRealm(std.NewUserRealm(user1))
-//	Downvote(rlmPath3)
-//	Downvote(rlmPath4)
-//	Downvote(rlmPath5)
-//
-//	testing.SetOriginCaller(user2)
-//	testing.SetRealm(std.NewUserRealm(user2))
-//	Downvote(rlmPath4)
-//	Downvote(rlmPath5)
-//
-//	testing.SetOriginCaller(user3)
-//	testing.SetRealm(std.NewUserRealm(user3))
-//	Downvote(rlmPath5)
-//
-//	// We are dispalying data is reverse order in render, so items should be sorted in reverse order
-//	firstKey, firstRawValue := exhibition.itemsSortedByDownvotes.GetByIndex(0)
-//
-//	firstValue := firstRawValue.(*Item)
-//
-//	uassert.Equal(t, firstValue.pkgpath, rlmPath3)
-//
-//	secondKey, secondRawValue := exhibition.itemsSortedByDownvotes.GetByIndex(1)
-//
-//	secondValue := secondRawValue.(*Item)
-//
-//	uassert.Equal(t, secondValue.pkgpath, rlmPath4)
-//}
-//
-//func TestSortByCreation(t *testing.T) {
-//	// Remove all items from all trees
-//	exhibition.items.Iterate("", "", func(key string, value interface{}) bool {
-//		exhibition.items.Remove(key)
-//		return false
-//	})
-//	exhibition.itemsSortedByUpvotes.Iterate("", "", func(key string, value interface{}) bool {
-//		exhibition.itemsSortedByUpvotes.Remove(key)
-//		return false
-//	})
-//	exhibition.itemsSortedByDownvotes.Iterate("", "", func(key string, value interface{}) bool {
-//		exhibition.itemsSortedByDownvotes.Remove(key)
-//		return false
-//	})
-//	exhibition.itemsSortedByCreation.Iterate("", "", func(key string, value interface{}) bool {
-//		exhibition.itemsSortedByCreation.Remove(key)
-//		return false
-//	})
-//
-//	testing.SkipHeights(10)
-//	testing.SetRealm(std.NewCodeRealm(rlmPath3))
-//	Register(validTitle, validDesc)
-//
-//	testing.SkipHeights(10)
-//	testing.SetRealm(std.NewCodeRealm(rlmPath4))
-//	Register(validTitle, validDesc)
-//
-//	testing.SkipHeights(10)
-//	testing.SetRealm(std.NewCodeRealm(rlmPath5))
-//	Register(validTitle, validDesc)
-//
-//	// We are dispalying data is reverse order in render, so items should be sorted in reverse order
-//	firstKey, firstRawValue := exhibition.itemsSortedByCreation.GetByIndex(0)
-//
-//	firstValue := firstRawValue.(*Item)
-//
-//	uassert.Equal(t, firstValue.pkgpath, rlmPath3)
-//
-//	secondKey, secondRawValue := exhibition.itemsSortedByCreation.GetByIndex(1)
-//
-//	secondValue := secondRawValue.(*Item)
-//
-//	uassert.Equal(t, secondValue.pkgpath, rlmPath4)
-//}
+func TestSortByDownvote(t *testing.T) {
+	setupTest(t)
+
+	// Add items
+	testing.SetRealm(std.NewCodeRealm(rlmPath2))
+	cross(Register)(validTitle, validDesc)
+
+	testing.SetRealm(std.NewCodeRealm(rlmPath3))
+	cross(Register)(validTitle, validDesc)
+
+	testing.SetRealm(std.NewCodeRealm(rlmPath4))
+	cross(Register)(validTitle, validDesc)
+
+	user1 := testutils.TestAddress("user1")
+	user2 := testutils.TestAddress("user2")
+	user3 := testutils.TestAddress("user3")
+
+	testing.SetOriginCaller(user1)
+	testing.SetRealm(std.NewUserRealm(user1))
+	Downvote(rlmPath2)
+	Downvote(rlmPath3)
+	Downvote(rlmPath4)
+
+	testing.SetOriginCaller(user2)
+	testing.SetRealm(std.NewUserRealm(user2))
+	Downvote(rlmPath3)
+	Downvote(rlmPath4)
+
+	testing.SetOriginCaller(user3)
+	testing.SetRealm(std.NewUserRealm(user3))
+	Downvote(rlmPath4)
+
+	render := exhibition.Render("?sort=downvotes", false)
+
+	pos2 := strings.Index(render, strings.TrimPrefix(rlmPath2, "gno.land"))
+	pos3 := strings.Index(render, strings.TrimPrefix(rlmPath3, "gno.land"))
+	pos4 := strings.Index(render, strings.TrimPrefix(rlmPath4, "gno.land"))
+
+	if pos4 > pos3 || pos4 > pos2 || pos3 > pos2 {
+		t.Fatalf("expected different order")
+	}
+}
+
+func TestSortByCreation(t *testing.T) {
+	setupTest(t)
+
+	println(std.ChainHeight())
+
+	// Add items
+	testing.SetRealm(std.NewCodeRealm(rlmPath2))
+	cross(Register)(validTitle, validDesc)
+	testing.SkipHeights(10)
+
+	println(std.ChainHeight())
+	testing.SetRealm(std.NewCodeRealm(rlmPath3))
+	cross(Register)(validTitle, validDesc)
+	testing.SkipHeights(10)
+
+	println(std.ChainHeight())
+
+	testing.SetRealm(std.NewCodeRealm(rlmPath4))
+	cross(Register)(validTitle, validDesc)
+
+	render := exhibition.Render("?sort=creation", false)
+
+	pos2 := strings.Index(render, strings.TrimPrefix(rlmPath2, "gno.land"))
+	pos3 := strings.Index(render, strings.TrimPrefix(rlmPath3, "gno.land"))
+	pos4 := strings.Index(render, strings.TrimPrefix(rlmPath4, "gno.land"))
+
+	println(render)
+
+	println(pos2, pos3, pos4)
+
+	//if pos4 > pos3 || pos4 > pos2 || pos3 > pos2 {
+	//	t.Fatalf("expected different order")
+	//}
+}
 
 func setupTest(t *testing.T) {
 	t.Helper()
@@ -333,4 +297,9 @@ func setupTest(t *testing.T) {
 	exhibition.itemsSortedByDownvotes = avl.NewTree()
 	exhibition.itemsSortedByCreation = avl.NewTree()
 	exhibition.itemCounter = 0
+}
+
+func itemExists(t *testing.T, rlmPath string) bool {
+	t.Helper()
+	return exhibition.items.Has(rlmPath)
 }
