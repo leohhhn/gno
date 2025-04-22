@@ -65,6 +65,8 @@ func init() {
 // Register registers your realm to the Hall of Fame
 // Should be called from within code
 func Register(title, description string) {
+	crossing()
+	
 	if Pausable.IsPaused() {
 		return
 	}
@@ -104,10 +106,10 @@ func Register(title, description string) {
 	}
 
 	exhibition.items.Set(pkgpath, i)
+
 	exhibition.itemsSortedByCreation.Set(getCreationSortKey(i.blockNum, i.id), i)
 	exhibition.itemsSortedByUpvotes.Set(getVoteSortKey(i.upvote.Size(), i.id), i)
 	exhibition.itemsSortedByDownvotes.Set(getVoteSortKey(i.downvote.Size(), i.id), i)
-
 	std.Emit("Registration")
 }
 
