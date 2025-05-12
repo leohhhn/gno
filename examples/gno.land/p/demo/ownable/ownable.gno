@@ -18,17 +18,10 @@ func NewWithPrevious() *Ownable {
 	}
 }
 
-// NewWithOrigin is strictly for when deployer a realm to be the owner.
-// It's meant to be used in init() of the deployed realm.
+// NewWithOrigin will create an ownable with the initiator of the transaction.
 func NewWithOrigin() *Ownable {
-	origin := std.OriginCaller()
-	previous := std.PreviousRealm()
-	if origin != previous.Address() {
-		panic("NewWithOrigin() should be called from init() where std.PreviousRealm().Address() is OriginCaller")
-	}
-
 	return &Ownable{
-		owner: origin,
+		owner: std.OriginCaller(),
 	}
 }
 
@@ -51,6 +44,7 @@ func (o *Ownable) Owner() std.Address {
 	if o == nil {
 		return std.Address("")
 	}
+	
 	return o.owner
 }
 

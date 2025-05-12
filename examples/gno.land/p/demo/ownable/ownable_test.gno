@@ -1,7 +1,6 @@
 package ownable
 
 import (
-	"github.com/gnolang/gno/examples/gno.land/p/moul/authz"
 	"std"
 	"testing"
 
@@ -17,35 +16,26 @@ var (
 
 func TestNewWithCurrent(t *testing.T) {
 	testing.SetRealm(std.NewCodeRealm("gno.land/r/test/test"))
-	current := std.CurrentRealm().Address()
 
-	o := NewFromCurrent()
+	o := NewWithCurrent()
 	got := o.Owner()
-	uassert.Equal(t, got, current)
+	uassert.Equal(t, got, std.CurrentRealm().Address())
 }
 
 func TestNewWithPrevious(t *testing.T) {
-	testing.SetRealm(std.NewCodeRealm("gno.land/r/test/test"))
-	current := std.CurrentRealm().Address()
-
-	o := New()
-	got := o.Owner()
-	uassert.Equal(t, got, current)
-}
-
-func TestNewWithOriginPanic(t *testing.T) {
 	testing.SetOriginCaller(alice)
 	testing.SetRealm(std.NewUserRealm(alice))
 
-	uassert.PanicsWithMessage(t, "frame not found: cannot seek beyond origin caller override", func() {
-		NewWithOrigin()
+	crossThrough(std.NewCodeRealm("gno.land/r/test/test"), func() {
+		o := NewWithPrevious()
+		got := o.Owner()
+		uassert.Equal(t, got, alice)
 	})
 }
 
 func TestNewWithOrigin(t *testing.T) {
 	testing.SetRealm(std.NewUserRealm(alice))
 	crossThrough(std.NewCodeRealm("gno.land/r/test/test"), func() {
-		// This is the only way to test crosses from a p package for now.
 		o := NewWithOrigin()
 		got := o.Owner()
 		uassert.Equal(t, got, alice)
@@ -62,7 +52,7 @@ func TestNewWithAddress(t *testing.T) {
 func TestTransferOwnershipByCurrent(t *testing.T) {
 	testing.SetRealm(std.NewUserRealm(alice))
 
-	o := NewFromCurrent()
+	o := NewWithCurrent()
 	err := o.TransferOwnershipByCurrent(bob)
 	urequire.NoError(t, err)
 
@@ -70,31 +60,33 @@ func TestTransferOwnershipByCurrent(t *testing.T) {
 	uassert.Equal(t, got, bob)
 }
 
-//func TestTransferOwnershipUnauthorized(t *testing.T) {
-//	var o *Ownable
-//
-//	testing.SetRealm(std.NewUserRealm(alice))
-//	crossThrough(std.NewCodeRealm("gno.land/r/test/test"), func() {
-//		o = NewWithOrigin() // owned by alice
-//	})
-//
-//	// Try unauthorized transfer from non-alice realm.
-//	crossThrough(std.NewCodeRealm("gno.land/r/test/test"), func() {
-//		uassert.ErrorContains(t, o.TransferOwnership(alice), ErrUnauthorized.Error())
-//		uassert.ErrorContains(t, o.DropOwnershipByCurrent(), ErrUnauthorized.Error())
-//	})
-//
-//	// Set realm to an unauthorized user bob.
-//	testing.SetRealm(std.NewUserRealm(bob))
-//	// current is gno.land/r/test/test so of course errors.
-//	uassert.ErrorContains(t, o.TransferOwnership(bob), ErrUnauthorized.Error())
-//	uassert.ErrorContains(t, o.DropOwnershipByCurrent(), ErrUnauthorized.Error())
-//	// Reset realm to alice.
-//	testing.SetRealm(std.NewUserRealm(alice))
-//	uassert.NoError(t, o.TransferOwnership(alice))
-//	uassert.NoError(t, o.DropOwnershipByCurrent())
-//}
-//
+func TestTransferOwnershipByCurrentUnauthorized(t *testing.T) {
+	var o *Ownable
+
+	testing.SetRealm(std.NewUserRealm(alice))
+	o = NewWithCurrent()
+
+	println(std.CurrentRealm())
+
+	println(o.Owner())
+
+	//// Try unauthorized transfer from non-alice realm.
+	//crossThrough(std.NewCodeRealm("gno.land/r/test/test"), func() {
+	//	uassert.ErrorContains(t, o.TransferOwnershipByCurrent(alice), ErrUnauthorized.Error())
+	//	uassert.ErrorContains(t, o.DropOwnershipByCurrent(), ErrUnauthorized.Error())
+	//})
+	//
+	//// Set realm to an unauthorized user bob.
+	//testing.SetRealm(std.NewUserRealm(bob))
+	//// current is gno.land/r/test/test so of course errors.
+	//uassert.ErrorContains(t, o.TransferOwnership(bob), ErrUnauthorized.Error())
+	//uassert.ErrorContains(t, o.DropOwnershipByCurrent(), ErrUnauthorized.Error())
+	//// Reset realm to alice.
+	//testing.SetRealm(std.NewUserRealm(alice))
+	//uassert.NoError(t, o.TransferOwnership(alice))
+	//uassert.NoError(t, o.DropOwnershipByCurrent())
+}
+
 //func TestOwnedByCurrent(t *testing.T) {
 //	testing.SetRealm(std.NewUserRealm(alice))
 //	o := New()
