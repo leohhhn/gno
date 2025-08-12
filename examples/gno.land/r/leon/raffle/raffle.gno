@@ -9,6 +9,7 @@ import (
 
 	"gno.land/p/demo/ownable"
 	"gno.land/p/demo/ufmt"
+	"gno.land/p/moul/md"
 )
 
 // EntryData is the main struct that contains all data on raffle entries
@@ -28,21 +29,23 @@ var (
 	codeHashes       []string            // valid code hashes
 	registeredHashes map[string]struct{} // tracks if a code has been registered before
 	winner1, winner2 *EntryData          // storing raffle winners
-	numReg           int
+	numOfRegUsers    int
 	randSource       *rand.Rand
 )
 
 // Nothing to see here, just some constants, move on :)
 const (
-	codeLength = 10
-	amtOfCodes = 300
+	codeLength  = 10
+	amtOfCodes  = 300
+	numOfPrizes = 2
 )
 
 // Hello! This is where you register your raffle code!
 // Calling RegisterCode is the first step for entering the raffle.
 // It allows you to register a specific raffle code and connect your address to it.
+
 // RegisterCode only be called via other code; you should figure out a way to do it.
-func RegisterCode(code string) string {
+func RegisterCode(_ realm, code string) string {
 	if code == "" || len(code) != codeLength {
 		panic("invalid code: " + code)
 	}
@@ -114,7 +117,7 @@ func init() {
 // RegisterUsername registers a GitHub username to an already existing entry
 // Hint: you can call this function just like you did with RegisterCode(), or via gno.studio/connect :)
 // If you use Connect, make sure you're on the Portal Loop network, and you've navigated to the correct path!
-func RegisterUsername(username string) string {
+func RegisterUsername(_ realm, username string) string {
 	if username == "" {
 		panic("invalid username: " + username)
 	}
@@ -129,7 +132,7 @@ func RegisterUsername(username string) string {
 
 			entry.ghUsername = username
 			completeEntries = append(completeEntries, entry)
-			numReg += 1
+			numOfRegUsers += 1
 			return ufmt.Sprintf("successfully registered %s for address %s", username, entry.txorigin)
 		}
 	}
@@ -174,7 +177,7 @@ func UploadRandomness(_ realm, x, y uint64) {
 // Rendering
 
 func Render(_ string) string {
-	output := "# Raffle - GopherCon US 2024\n\n"
+	output := "# Raffle - GopherCon UK 2025\n\n"
 
 	output += renderStats()
 
@@ -192,44 +195,36 @@ func renderStats() string {
 
 	output += "### Raffle Stats\n\n"
 
-	output += `<div class="columns-3">`
+	cols := md.Columns([]string{
+		renderLatestCodesWidget(5),
+		renderLatestUsernamesWidget(5),
+		renderChances(),
+	}, true)
 
-	output += `<div class="column">` // Latest codes
-	output += renderLatestCodesWidget(5)
-	output += `</div>` // close Latest codes
-
-	output += `<div class="column">` // Latest usernames
-	output += renderLatestUsernamesWidget(5)
-	output += `</div>` // close Latest usernames
-
-	output += `<div class="column">` // Chances
-	output += renderChances()
-	output += `</div>` // close Chances
-
-	output += `</div>` // close columns-3
-
-	output += "\n\n"
+	output += cols
 	output += "---" // close section
-
 	output += "\n"
 
 	return output
 }
 
 func renderChances() string {
-	output := "\n\n#### Chances\n\n"
+	output := "\n\n#### Chances\n"
 
-	output += ufmt.Sprintf("- Users in the raffle: %d\n\n", numReg)
+	output += ufmt.Sprintf("- Prizes to win: %d\n", numOfPrizes)
+	output += ufmt.Sprintf("- Users in the raffle: %d\n", numOfRegUsers)
 
-	if numReg > 0 {
-		output += ufmt.Sprintf("- Chance of winning: 2:%d\n\n", numReg)
+	if numOfRegUsers > numOfPrizes {
+		output += ufmt.Sprintf("- Chance of winning: %.2f%%\n", float32(numOfPrizes)/float32(numOfRegUsers))
+	} else {
+		output += "- Chance of winning: 100%\n"
 	}
 
 	return output
 }
 
 func renderLatestCodesWidget(amt int) string {
-	output := "\n\n#### Latest codes\n\n"
+	output := "\n\n#### Latest codes\n"
 	peNum := len(partialEntries)
 
 	if peNum == 0 {
@@ -242,7 +237,7 @@ func renderLatestCodesWidget(amt int) string {
 	}
 
 	for i := peNum - 1; i >= peNum-amt; i-- {
-		output += ufmt.Sprintf("- `%s`\n\n", partialEntries[i].raffleCode)
+		output += ufmt.Sprintf("- `%s`\n", partialEntries[i].raffleCode)
 	}
 
 	return output
@@ -253,7 +248,7 @@ func renderLatestUsernamesWidget(amt int) string {
 	ceNum := len(completeEntries)
 
 	if winner1 != nil || winner2 != nil {
-		output += "Winners are chosen!"
+		output += "Winners have been chosen chosen!"
 		return output
 	}
 
@@ -267,7 +262,7 @@ func renderLatestUsernamesWidget(amt int) string {
 	}
 
 	for i := ceNum - 1; i >= ceNum-amt; i-- {
-		output += ufmt.Sprintf("- `%s`\n\n", completeEntries[i].ghUsername)
+		output += ufmt.Sprintf("- `@%s`\n\n", completeEntries[i].ghUsername)
 	}
 
 	return output

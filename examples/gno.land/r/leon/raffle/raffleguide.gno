@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	raffleRealmPath = std.CurrentRealm().PkgPath() // will give you portal loop path
+	raffleRealmPath = std.CurrentRealm().PkgPath()
 )
 
 func RenderGuide() string {
@@ -15,12 +15,12 @@ func RenderGuide() string {
 
 Welcome, gopher!
 
-You've decided to enter the gno.land raffle to get a chance to win a valuable prize.
+You've decided to enter the Gno.land raffle to get a chance to win a valuable prize.
 We congratulate you on your curiosity and courage!
 
 You will need your personal computer and a bit of time to enter the raffle. Find 
 a quiet corner and read the rest of this README file.
-Also, make sure you've gotten your unique raffle entry code at the gno.land booth -
+Also, make sure you've gotten your unique raffle entry code at the Gno.land booth -
 you will not be able to proceed without it.
 
 ## Why enter the raffle?
@@ -30,7 +30,7 @@ a couple of basic concepts on how to use Gno, as well as some supporting Gno too
 the [Gno Playground](https://play.gno.land), which will help you deploy your own 
 Gno code, and [Connect](https://gno.studio/connect), which will
 allow you to easily call smart contracts (called "!realms"! in Gno) that live on
-the gno.land blockchain.
+the Gno.land blockchain.
 
 We've created this raffle to reward gophers that are curious and eager to learn
 about new tech- if you can relate, you're in the right place!
@@ -41,20 +41,20 @@ the raffle prizes - we're giving away two Keychron K2 Pro mechanical keyboards.
 ## How do I enter?
 
 To enter the raffle, you will need to go into dev mode. You need to take a look 
-at some Gno code, learn how to interact with the gno.land blockchain, and submit
+at some Gno code, learn how to interact with the Gno.land blockchain, and submit
 your raffle entry to the Raffle realm - which you are viewing right now!
 This text, as well as the "Stats" at the top of the page are actual live state of
 the Raffle realm.
 
 We want you to try to figure things out on your own; you should prove your curiosity
 and ability to learn about new technology in a short period of time. If, however, 
-you do run into issues - the engineers at the gno.land booth will be able to help 
+you do run into issues - the engineers at the Gno.land booth will be able to help 
 you.
 
 ## Let's get started!
 
 Entering the raffle involves two main parts:
-1. Registering your raffle code, which you got from the gno.land booth
+1. Registering your raffle code, which you got from the Gno.land booth
 2. Registering your GitHub username
 
 Both of these involve interacting with the Raffle realm. 
@@ -62,9 +62,9 @@ You're currently reading the rendered state of the realm;
 and you can view its source code by clicking on the [[source]](https://REALMPATH/)
 button on the top right of the page.
 
-## 1. Making a gno.land keypair
+## 1. Making a Gno.land keypair
 
-A keypair is what allows you to interact with the gno.land blockchain. For this, you
+A keypair is what allows you to interact with the Gno.land blockchain. For this, you
 can use the Adena wallet- it will generate a keypair for you. You will then be able
 use this keypair to deploy your own Gno code to the blockchain and call functions on 
 existing Gno code, such as this Raffle realm.
@@ -96,8 +96,8 @@ in time. On top of this, to prevent DDoS attacks, all blockchains implement
 a gas system; for every state change on the network (a transaction), a user must 
 pay with the network's native currency.
 
-In the case of gno.land, this is "!GNOT"!. To get some testnet "!GNOT"!, 
-visit the [gno.land Faucet Hub](https://faucet.gno.land). 
+In the case of Gno.land, this is "!GNOT"!. To get some testnet "!GNOT"!, 
+visit the [Gno.land Faucet Hub](https://faucet.gno.land). 
 
 Select "Gno Portal Loop", enter your Adena address (copy it from the top of the Adena
 wallet! it starts with "!g1..."!), select "!10 GNOT"!, complete the captcha, and click
