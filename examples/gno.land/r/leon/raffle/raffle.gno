@@ -5,11 +5,8 @@ import (
 	"encoding/hex"
 	"math/rand"
 	"std"
-	"strings"
 
-	"gno.land/p/demo/ownable"
 	"gno.land/p/demo/ufmt"
-	"gno.land/p/moul/md"
 )
 
 // EntryData is the main struct that contains all data on raffle entries
@@ -23,7 +20,6 @@ type EntryData struct {
 
 // Top-level variables are automatically persisted to storage
 var (
-	o                *ownable.Ownable    // admin of the raffle realm
 	partialEntries   []*EntryData        // keeps registered partialEntries
 	completeEntries  []*EntryData        // keeps complete registrations: valid code + gh username
 	codeHashes       []string            // valid code hashes
@@ -46,11 +42,7 @@ const (
 
 // RegisterCode only be called via other code; you should figure out a way to do it.
 func RegisterCode(_ realm, code string) string {
-	if code == "" || len(code) != codeLength {
-		panic("invalid code: " + code)
-	}
-
-	caller := std.PreviousRealm() // save realm used to call
+	caller := std.PreviousRealm() // save code realm used to call
 	origin := std.OriginCaller()  // save deployer of realm
 
 	// Deny non-code entries
@@ -105,8 +97,6 @@ func RegisterCode(_ realm, code string) string {
 // Somewhat similar to Go, init() executes upon deployment of your code.
 // Hint: maybe you can use init() in your code to execute RegisterCode() upon deployment via play.gno.land?
 func init() {
-	// Set admin address
-	o = ownable.NewWithAddress("g125em6arxsnj49vx35f0n0z34putv5ty3376fg5")
 
 	partialEntries = make([]*EntryData, 0)
 	completeEntries = make([]*EntryData, 0)
@@ -116,7 +106,8 @@ func init() {
 
 // RegisterUsername registers a GitHub username to an already existing entry
 // Hint: you can call this function just like you did with RegisterCode(), or via gno.studio/connect :)
-// If you use Connect, make sure you're on the Portal Loop network, and you've navigated to the correct path!
+// If you use Connect, make sure you're on the Test7 network, and you've navigated to the correct path!
+// If you're chosen as a winner, you'll need to present a logged-in GitHub page matching the username.
 func RegisterUsername(_ realm, username string) string {
 	if username == "" {
 		panic("invalid username: " + username)
@@ -138,152 +129,6 @@ func RegisterUsername(_ realm, username string) string {
 	}
 
 	panic("could not find entry for caller address; did you register your raffle code yet?")
-}
-
-// Admin stuff
-
-func PickWinner1(_ realm) string {
-	o.AssertOwnedByPrevious()
-	winner1 = pickWinner()
-
-	return winner1.ghUsername
-}
-
-func PickWinner2(_ realm) string {
-	o.AssertOwnedByPrevious()
-	winner2 = pickWinner()
-
-	return winner2.ghUsername
-}
-
-func UploadCodeHashes(_ realm, delimCodes string) {
-	o.AssertOwnedByPrevious()
-
-	tokens := strings.Split(delimCodes, ",")
-
-	if len(tokens) != amtOfCodes {
-		panic(ufmt.Sprintf("invalid amount of codes; wanted %d got %d", amtOfCodes, len(tokens)))
-	}
-
-	copy(codeHashes, tokens)
-}
-
-func UploadRandomness(_ realm, x, y uint64) {
-	o.AssertOwnedByPrevious()
-
-	randSource = rand.New(rand.NewPCG(x, y))
-}
-
-// Rendering
-
-func Render(_ string) string {
-	output := "# Raffle - GopherCon UK 2025\n\n"
-
-	output += renderStats()
-
-	if winner1 != nil || winner2 != nil {
-		output += renderWinners()
-	}
-
-	output += RenderGuide()
-
-	return output
-}
-
-func renderStats() string {
-	output := ""
-
-	output += "### Raffle Stats\n\n"
-
-	cols := md.Columns([]string{
-		renderLatestCodesWidget(5),
-		renderLatestUsernamesWidget(5),
-		renderChances(),
-	}, true)
-
-	output += cols
-	output += "---" // close section
-	output += "\n"
-
-	return output
-}
-
-func renderChances() string {
-	output := "\n\n#### Chances\n"
-
-	output += ufmt.Sprintf("- Prizes to win: %d\n", numOfPrizes)
-	output += ufmt.Sprintf("- Users in the raffle: %d\n", numOfRegUsers)
-
-	if numOfRegUsers > numOfPrizes {
-		output += ufmt.Sprintf("- Chance of winning: %.2f%%\n", float32(numOfPrizes)/float32(numOfRegUsers))
-	} else {
-		output += "- Chance of winning: 100%\n"
-	}
-
-	return output
-}
-
-func renderLatestCodesWidget(amt int) string {
-	output := "\n\n#### Latest codes\n"
-	peNum := len(partialEntries)
-
-	if peNum == 0 {
-		output += "No codes registered yet."
-		return output
-	}
-
-	if peNum < amt {
-		amt = peNum
-	}
-
-	for i := peNum - 1; i >= peNum-amt; i-- {
-		output += ufmt.Sprintf("- `%s`\n", partialEntries[i].raffleCode)
-	}
-
-	return output
-}
-
-func renderLatestUsernamesWidget(amt int) string {
-	output := "\n\n#### Latest usernames\n\n"
-	ceNum := len(completeEntries)
-
-	if winner1 != nil || winner2 != nil {
-		output += "Winners have been chosen chosen!"
-		return output
-	}
-
-	if ceNum == 0 {
-		output += "No usernames registered yet."
-		return output
-	}
-
-	if ceNum < amt {
-		amt = ceNum
-	}
-
-	for i := ceNum - 1; i >= ceNum-amt; i-- {
-		output += ufmt.Sprintf("- `@%s`\n\n", completeEntries[i].ghUsername)
-	}
-
-	return output
-}
-
-func renderWinners() string {
-	output := "\n\n# Winners\n\n"
-
-	if winner1 != nil {
-		output += ufmt.Sprintf("### Winner 1: `@%s`\n\n", winner1.ghUsername)
-	}
-
-	if winner2 != nil {
-		output += ufmt.Sprintf("### Winner 2: `@%s`\n\n", winner2.ghUsername)
-	}
-
-	output += "## Congratulations! Come to the booth and show us your GitHub account!\n\n"
-
-	output += "---\n\n"
-
-	return output
 }
 
 // Helpers

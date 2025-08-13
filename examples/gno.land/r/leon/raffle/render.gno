@@ -3,15 +3,129 @@ package raffle
 import (
 	"std"
 	"strings"
+
+	"gno.land/p/demo/ufmt"
+	"gno.land/p/moul/md"
 )
 
-var (
-	raffleRealmPath = std.CurrentRealm().PkgPath()
-)
+func Render(_ string) string {
+	output := "# Raffle - GopherCon UK 2025\n\n"
+
+	output += renderStats()
+
+	if winner1 != nil || winner2 != nil {
+		output += renderWinners()
+	}
+
+	output += RenderGuide()
+
+	return output
+}
+
+func renderStats() string {
+	output := ""
+
+	output += "### Raffle Stats\n\n"
+
+	cols := md.Columns([]string{
+		renderLatestCodesWidget(5),
+		renderLatestUsernamesWidget(5),
+		renderChances(),
+	}, true)
+
+	output += cols
+	output += "---" // close section
+	output += "\n"
+
+	return output
+}
+
+func renderChances() string {
+	output := "\n\n#### Chances\n"
+
+	output += ufmt.Sprintf("- Prizes to win: %d\n", numOfPrizes)
+	output += ufmt.Sprintf("- Users in the raffle: %d\n", numOfRegUsers)
+
+	if numOfRegUsers > numOfPrizes {
+		output += ufmt.Sprintf("- Chance of winning: %.2f%%\n", float32(numOfPrizes)/float32(numOfRegUsers))
+	} else {
+		output += "- Chance of winning: 100%\n"
+	}
+
+	return output
+}
+
+func renderLatestCodesWidget(amt int) string {
+	output := "\n\n#### Latest codes\n"
+	peNum := len(partialEntries)
+
+	if peNum == 0 {
+		output += "No codes registered yet."
+		return output
+	}
+
+	if peNum < amt {
+		amt = peNum
+	}
+
+	for i := peNum - 1; i >= peNum-amt; i-- {
+		output += ufmt.Sprintf("- `%s`\n", partialEntries[i].raffleCode)
+	}
+
+	return output
+}
+
+func renderLatestUsernamesWidget(amt int) string {
+	output := "\n\n#### Latest usernames\n\n"
+	ceNum := len(completeEntries)
+
+	if winner1 != nil || winner2 != nil {
+		output += "Winners have been chosen chosen!"
+		return output
+	}
+
+	if ceNum == 0 {
+		output += "No usernames registered yet."
+		return output
+	}
+
+	if ceNum < amt {
+		amt = ceNum
+	}
+
+	for i := ceNum - 1; i >= ceNum-amt; i-- {
+		output += ufmt.Sprintf("- `@%s`\n\n", completeEntries[i].ghUsername)
+	}
+
+	return output
+}
+
+func renderWinners() string {
+	output := "\n\n# Winners\n\n"
+
+	if winner1 != nil {
+		output += ufmt.Sprintf("### Winner 1: `@%s`\n\n", winner1.ghUsername)
+	}
+
+	if winner2 != nil {
+		output += ufmt.Sprintf("### Winner 2: `@%s`\n\n", winner2.ghUsername)
+	}
+
+	output += "## Congratulations! Come to the booth and show us your GitHub account!\n\n"
+
+	output += "---\n\n"
+
+	return output
+}
 
 func RenderGuide() string {
 
 	text := `# Entering the raffle
+
+
+PRIZES
+STAGING OR TEST7
+NAMESPACE
 
 Welcome, gopher!
 
@@ -43,12 +157,12 @@ the raffle prizes - we're giving away two Keychron K2 Pro mechanical keyboards.
 To enter the raffle, you will need to go into dev mode. You need to take a look 
 at some Gno code, learn how to interact with the Gno.land blockchain, and submit
 your raffle entry to the Raffle realm - which you are viewing right now!
-This text, as well as the "Stats" at the top of the page are actual live state of
-the Raffle realm.
+This text, as well as the "Stats" at the top of the page are the actual live stats of
+this Raffle realm.
 
 We want you to try to figure things out on your own; you should prove your curiosity
 and ability to learn about new technology in a short period of time. If, however, 
-you do run into issues - the engineers at the Gno.land booth will be able to help 
+you do run into issues - the engineers at the Gno.land booth might be able to help 
 you.
 
 ## Let's get started!
@@ -128,19 +242,19 @@ By reading some code, you found out that you need to write and deploy some Gno c
 ## 4. Writing Gno code in the Gno Playground
 
 The next step to entering the raffle is writing a bit of Gno code and deploying
-it to the gno.land blockchain. 
+it to the Gno.land blockchain. 
 
-Before diving into the code, let's learn about how the gno.land blockchain stores 
+Before diving into the code, let's learn about how the Gno.land blockchain stores 
 data.
 
-All code uploaded to gno.land lives on a specific path, like in a file system.
+All code uploaded to Gno.land lives on a specific path, like in a file system.
 For example, you were able to find the Raffle realm on "!REALMPATH"!.
 This path is a crucial piece of any realm- apart from being able to 
 call all exported functions in the Gno code by specifying its path (a next step!), the path can 
 also be used to import the code into your own application, providing reusability
 of code and interaction between applications that live on the chain.
 
-The path of the Raffle realm can also be found in the "!gno.mod"! file,
+The path of the Raffle realm can also be found in the "!gnomod.toml"! file,
 which you can also find on the [source] page.
 
 If you have read through the "!raffle.gno"! file, you may have noticed that "!RegisterCode()"! 
@@ -148,7 +262,7 @@ can only be called _via other code_. Try to use the Gno Playground to write your
 app that will import the Raffle realm.
 
 Figure out where to use the "!RegisterCode()"! function, and make sure to add
-your (case sensitive!!) raffle code as a string argument when calling it.
+your raffle code as a string argument when calling it.
 
 ## 5. Deploying Gno code
 
@@ -162,9 +276,10 @@ desired code, you can click on "Deploy". This will:
 - On the top right corner of the Playground, choose the network you want to deploy
 your code to - you should select "Portal Loop"
 - Pick a deployment path for your realm - choose the "!r/"! prefix, enter in your
-namespace (it can be your username), and match your Gno package name to the last
-part of the path. A suggested deployment path could be ""!gno.land/r/gc24/myusername/raffle"!",
+address as the namespace, and match your Gno package name to the last
+part of the path. A suggested deployment path could be ""!gno.land/r/gc24/{my_address}/raffle"!",
 while the package name would need to be ""!raffle"!"
+- Note: if you want to deploy to a nicer namespace, register one via the [User Registry](/r/gnoland/users/v1)
 
 Clicking on "Deploy" will prompt an Adena window that will ask you to sign
 the transaction which will upload your code to the chain. The "!init()"!
@@ -186,15 +301,15 @@ out a way to do it.
 
 If you've succeeded, you'll see your username show up in the "Stats" section at the top.
 
-!!! Make sure to register your real GitHub username; if you are chosen as a winner,
-you will have to prove you have access to the GitHub account !!!
+Note: make sure to register your real GitHub username; if you are chosen as a winner,
+you will have to prove you have access to the GitHub account.
 
 ## Conclusion
 
 Congratulations on entering the Raffle! Sit back, relax, and wait for the winner
-announcement time at the gno.land booth.`
+announcement time at the Gno.land booth.`
 
-	text = strings.Replace(text, "REALMPATH", raffleRealmPath, -1)
+	text = strings.Replace(text, "REALMPATH", std.CurrentRealm().PkgPath(), -1)
 	text = strings.Replace(text, "\"!", "`", -1)
 
 	return text
