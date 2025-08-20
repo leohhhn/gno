@@ -49,8 +49,9 @@ func Example_readOnly() {
 	remote := "127.0.0.1:26657"
 	rpcClient, _ := rpcclient.NewHTTPClient(remote)
 
-	client := gnoclient.Client{
+	client := gnoclient.ReadonlyClient{
 		RPCClient: rpcClient,
 	}
-	_ = client
+	res, _, _ := client.QEval("gno.land/r/sys/users", "ResolveName(\"leon000\"")
+	println(res)
 }

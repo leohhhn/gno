@@ -25,3 +25,20 @@ func (c *Client) validateRPCClient() error {
 	}
 	return nil
 }
+
+type Provider struct {
+	RPCClient rpcclient.Client // RPC client for blockchain communication
+}
+
+// validateRPCClient checks that the RPCClient is correctly configured.
+func (c *Provider) validateRPCClient() error {
+	if c.RPCClient == nil {
+		return ErrMissingRPCClient
+	}
+	return nil
+}
+
+type ClientSigner struct {
+	Provider Provider
+	Signer   Signer
+}
